@@ -1,9 +1,12 @@
 "use client";
 
 import { ModeToggle } from "@/components/mode-toggle";
+import { ProposalList } from "@/components/proposal-list";
+import { SearchLink } from "@/components/search-link";
 import { Logo } from "@/components/logo";
-import { ChevronsLeft, MenuIcon } from "lucide-react";
+import { ChevronsLeft, ChevronsRight, MenuIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 import { ElementRef, useRef, useEffect, useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
 
@@ -112,30 +115,21 @@ export const Navigation: React.FC<NavigationProps> = ({ proposals }) => {
           <ChevronsLeft className="h-6 w-6" />
         </div>
 
-        <div className="flex items-center text-sm p-3 w-full hover:bg-primary/5" role="button">
-          <div className="gap-x-2 flex items-center max-w-[150px]">
-            <div className="w-5 h-5">
-              <Logo />
+        <Link href="/">
+          <div className="flex items-center text-sm p-3 w-full hover:bg-primary/5" role="button">
+            <div className="gap-x-2 flex items-center max-w-[150px]">
+              <div className="w-5 h-5">
+                <Logo />
+              </div>
+              <span className="text-start font-semibold line-clamp-1 pl-1">EIP.directory</span>
             </div>
-            <span className="text-start font-semibold line-clamp-1 pl-1">EIP.directory</span>
           </div>
-        </div>
+        </Link>
 
-        <div>
-          <p>Action items</p>
-        </div>
+        <SearchLink />
+
         <div className="mt-4">
-          {proposals && proposals.length > 0 ? (
-            <div>
-              {proposals.map((proposal) => (
-                <div key={proposal.id} className="font-semibold text-sm">
-                  {proposal.proposal_type}-{proposal.number}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p>No proposals found.</p>
-          )}
+          <ProposalList proposals={proposals} />
         </div>
         <div
           onMouseDown={handleMouseDown}
@@ -155,7 +149,20 @@ export const Navigation: React.FC<NavigationProps> = ({ proposals }) => {
         )}
       >
         <nav className="bg-transparent px-3 py-2 w-full">
-          {isCollapsed && <MenuIcon onClick={resetWidth} role="button" className="h-6 w-6 text-muted-foreground" />}
+          {isCollapsed && (
+            <div className="relative group">
+              <MenuIcon
+                onClick={resetWidth}
+                role="button"
+                className="h-6 w-6 text-muted-foreground group-hover:opacity-0 transition-opacity"
+              />
+              <ChevronsRight
+                onClick={resetWidth}
+                role="button"
+                className="h-6 w-6 text-muted-foreground absolute top-0 left-0 opacity-0 group-hover:opacity-100 transition-opacity"
+              />
+            </div>
+          )}
         </nav>
       </div>
     </>
