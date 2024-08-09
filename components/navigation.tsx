@@ -1,6 +1,7 @@
 "use client";
 
 import { ModeToggle } from "@/components/mode-toggle";
+import { Logo } from "@/components/logo";
 import { ChevronsLeft, MenuIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { ElementRef, useRef, useEffect, useState } from "react";
@@ -8,7 +9,11 @@ import { useMediaQuery } from "usehooks-ts";
 
 import { cn } from "@/lib/utils";
 
-export const Navigation = () => {
+interface NavigationProps {
+  proposals: any[]; // Adjust the type according to your data structure
+}
+
+export const Navigation: React.FC<NavigationProps> = ({ proposals }) => {
   const pathname = usePathname();
   const isMobile = useMediaQuery("(max-width: 768px)");
 
@@ -106,11 +111,31 @@ export const Navigation = () => {
         >
           <ChevronsLeft className="h-6 w-6" />
         </div>
+
+        <div className="flex items-center text-sm p-3 w-full hover:bg-primary/5" role="button">
+          <div className="gap-x-2 flex items-center max-w-[150px]">
+            <div className="w-5 h-5">
+              <Logo />
+            </div>
+            <span className="text-start font-semibold line-clamp-1 pl-1">EIP.directory</span>
+          </div>
+        </div>
+
         <div>
           <p>Action items</p>
         </div>
         <div className="mt-4">
-          <p>Documents</p>
+          {proposals && proposals.length > 0 ? (
+            <div>
+              {proposals.map((proposal) => (
+                <div key={proposal.id} className="font-semibold text-sm">
+                  {proposal.proposal_type}-{proposal.number}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p>No proposals found.</p>
+          )}
         </div>
         <div
           onMouseDown={handleMouseDown}
