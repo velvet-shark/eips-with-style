@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { ProposalShort } from "@/lib/types";
 
 import {
   FileInputIcon as EIPIcon,
@@ -9,16 +10,8 @@ import {
   ScrollIcon as RIPIcon
 } from "lucide-react";
 
-interface Proposal {
-  id: number;
-  proposal_type: string;
-  number: number;
-  title: string;
-  description: string;
-}
-
 interface ProposalListProps {
-  proposals: Proposal[];
+  proposals: ProposalShort[];
 }
 
 export const ProposalList: React.FC<ProposalListProps> = ({ proposals }) => {
