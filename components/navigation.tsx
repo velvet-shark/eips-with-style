@@ -104,42 +104,52 @@ export const Navigation: React.FC<NavigationProps> = ({ proposals }) => {
           isMobile && "w-0"
         )}
       >
-        <div
-          onClick={collapse}
-          role="button"
-          className={cn(
-            "w-6 h-6 text-muted-foreground rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600 absolute top-3 right-2 opacity-0 group-hover/sidebar:opacity-100 transition",
-            isMobile && "opacity-100"
-          )}
-        >
-          <ChevronsLeft className="h-6 w-6" />
-        </div>
-
-        <Link href="/">
-          <div className="flex items-center text-sm p-3 w-full hover:bg-primary/5" role="button">
-            <div className="gap-x-2 flex items-center max-w-[150px]">
-              <div className="w-5 h-5">
-                <Logo />
-              </div>
-              <span className="text-start font-semibold line-clamp-1 pl-1">EIP.directory</span>
+        <div>
+          <div className="block flex-shrink-0 flex-grow-0">
+            {/* Collapse button */}
+            <div
+              onClick={collapse}
+              role="button"
+              className={cn(
+                `w-6 h-6 text-muted-foreground rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600 absolute top-3 right-2 opacity-0 group-hover/sidebar:opacity-100 transition`,
+                isMobile && "opacity-100"
+              )}
+            >
+              <ChevronsLeft className="h-6 w-6" />
+            </div>
+            <div>
+              {/* Logo and home link */}
+              <Link href="/">
+                <div className="flex items-center text-sm p-3 w-full hover:bg-primary/5" role="button">
+                  <div className="gap-x-2 flex items-center max-w-[150px]">
+                    <div className="w-5 h-5">
+                      <Logo />
+                    </div>
+                    <span className="text-start font-semibold line-clamp-1 pl-1">EIP.directory</span>
+                  </div>
+                </div>
+              </Link>
+              {/* Search form */}
+              <SearchLink />
             </div>
           </div>
-        </Link>
-
-        <SearchLink />
-
-        <div className="mt-4">
-          <ProposalList proposals={proposals} />
-        </div>
-        <div
-          onMouseDown={handleMouseDown}
-          onClick={resetWidth}
-          className="opacity-0 group-hover/sidebar:opacity-100 transition cursor-ew-resize absolute h-full w-1 bg-primary/10 right-0 top-0"
-        />
-        <div className="mt-auto mb-4 flex justify-center">
-          <ModeToggle />
+          {/* Container for the proposal list */}
+          <div className="mt-4">
+            <ProposalList proposals={proposals} />
+          </div>
+          {/* Resizer handle for adjusting sidebar width */}
+          <div
+            onMouseDown={handleMouseDown}
+            onClick={resetWidth}
+            className="opacity-0 group-hover/sidebar:opacity-100 transition cursor-ew-resize absolute h-full w-1 bg-primary/10 right-0 top-0"
+          />
+          {/* Container for the mode toggle button, positioned at the bottom, sticky */}
+          <div className="absolute sticky bottom-0 left-0 right-0 p-4 bg-secondary flex justify-center">
+            <ModeToggle />
+          </div>
         </div>
       </aside>
+      {/* Container for hamburger menu when sidebar is collapsed */}
       <div
         ref={navbarRef}
         className={cn(
