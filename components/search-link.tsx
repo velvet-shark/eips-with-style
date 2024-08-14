@@ -8,7 +8,7 @@ export function SearchLink() {
 
   return (
     <div
-      className="group min-h-[30px] text-sm py-1.5 px-2 mx-2 rounded-md hover:bg-primary/10 flex items-center font-medium bg-primary/5 text-primary"
+      className="group min-h-[30px] text-sm py-1.5 pl-1 pr-2 mx-2 rounded-md hover:bg-primary/10 flex items-center font-medium bg-primary/5 text-primary"
       onClick={search.onOpen}
       role="button"
     >
