@@ -15,12 +15,6 @@ import { useEffect, useState } from "react";
 import { ProposalShort } from "@/lib/types";
 import { createClient as createBrowserClient } from "@/utils/supabase/client";
 
-// interface Proposal {
-//   _id: string;
-//   title: string;
-//   icon?: string;
-// }
-
 export function SearchCommand() {
   const router = useRouter();
   const [proposals, setProposals] = useState<ProposalShort[]>([]);

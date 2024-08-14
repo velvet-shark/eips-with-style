@@ -4,7 +4,6 @@ import { ModeToggle } from "@/components/mode-toggle";
 import { ProposalList } from "@/components/proposal-list";
 import { SearchLink } from "@/components/search-link";
 import { Logo } from "@/components/logo";
-import { Navbar } from "@/components/navbar";
 import { ChevronsLeft, ChevronsRight, MenuIcon } from "lucide-react";
 import { usePathname, useParams } from "next/navigation";
 import Link from "next/link";
@@ -160,26 +159,22 @@ export const Navigation: React.FC<NavigationProps> = ({ proposals }) => {
         )}
         ref={navbarRef}
       >
-        {!!params.documentId ? (
-          <Navbar isCollapsed={isCollapsed} onResetWidth={resetWidth} />
-        ) : (
-          <nav className="bg-transparent px-3 py-2 w-full">
-            {isCollapsed && (
-              <div className="relative group">
-                <MenuIcon
-                  onClick={resetWidth}
-                  role="button"
-                  className="h-6 w-6 text-muted-foreground group-hover:opacity-0 transition-opacity"
-                />
-                <ChevronsRight
-                  onClick={resetWidth}
-                  role="button"
-                  className="h-6 w-6 text-muted-foreground absolute top-0 left-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                />
-              </div>
-            )}
-          </nav>
-        )}
+        <nav className="bg-transparent px-3 py-2 w-full">
+          {isCollapsed && (
+            <div className="relative group">
+              <MenuIcon
+                onClick={resetWidth}
+                role="button"
+                className="h-6 w-6 text-muted-foreground group-hover:opacity-0 transition-opacity"
+              />
+              <ChevronsRight
+                onClick={resetWidth}
+                role="button"
+                className="h-6 w-6 text-muted-foreground absolute top-0 left-0 opacity-0 group-hover:opacity-100 transition-opacity"
+              />
+            </div>
+          )}
+        </nav>
       </div>
     </>
   );
