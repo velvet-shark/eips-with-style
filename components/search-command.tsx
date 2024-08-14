@@ -2,8 +2,6 @@
 
 import { File } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { createClient as createBrowserClient } from "@/utils/supabase/client";
-
 import {
   CommandDialog,
   CommandEmpty,
@@ -14,12 +12,32 @@ import {
 } from "@/components/ui/command";
 import { useSearch } from "@/hooks/use-search";
 import { useEffect, useState } from "react";
+import { ProposalShort } from "@/lib/types";
+import { createClient as createBrowserClient } from "@/utils/supabase/client";
 
-export async function SearchCommand() {
-  const supabase = createBrowserClient();
-  const { data: proposals } = await supabase.from("proposals").select("*");
+// interface Proposal {
+//   _id: string;
+//   title: string;
+//   icon?: string;
+// }
 
+export function SearchCommand() {
   const router = useRouter();
+  const [proposals, setProposals] = useState<ProposalShort[]>([]);
+
+  useEffect(() => {
+    const fetchProposals = async () => {
+      const supabase = createBrowserClient();
+      const { data, error } = await supabase.from("proposals").select("*");
+      if (error) {
+        console.error("Error fetching proposals:", error);
+      } else {
+        setProposals(data || []);
+      }
+    };
+
+    fetchProposals();
+  }, []);
   const [isMounted, setIsMounted] = useState(false);
 
   const toggle = useSearch((store) => store.toggle);
@@ -41,8 +59,10 @@ export async function SearchCommand() {
     return () => document.removeEventListener("keydown", down);
   }, [toggle]);
 
-  const onSelect = (id: string) => {
-    router.push(`/documents/${id}`);
+  const onSelect = (proposal_type: string, slug: string) => {
+    const proposalType = proposal_type.toLowerCase();
+    const proposalSlug = slug.toLowerCase();
+    router.push(`/${proposalType}s/${proposalSlug}`);
     onClose();
   };
 
@@ -58,13 +78,15 @@ export async function SearchCommand() {
         <CommandGroup heading="Proposals">
           {proposals?.map((proposal) => (
             <CommandItem
-              key={proposal._id}
-              value={`${proposal._id}-${proposal.title}`}
+              key={proposal.id}
+              value={`${proposal.id}`}
               title={proposal.title}
-              onSelect={onSelect}
+              onSelect={() => onSelect(proposal.proposal_type, proposal.slug)}
             >
-              {proposal.icon ? <p className="mr-2 text-[18px]">{proposal.icon}</p> : <File className="w-4 h-4 mr-2" />}
-              <span>{document.title}</span>
+              <File className="w-4 h-4 mr-2" />
+              <span>
+                {proposal.proposal_type}-{proposal.number} {proposal.title}
+              </span>
             </CommandItem>
           ))}
         </CommandGroup>

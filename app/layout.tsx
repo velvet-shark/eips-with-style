@@ -1,5 +1,6 @@
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { SearchCommand } from "@/components/search-command";
 import { siteConfig } from "@/config/site";
 import { createClient as createBrowserClient } from "@/utils/supabase/client";
 
@@ -47,6 +48,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           disableTransitionOnChange
           storageKey="website-theme"
         >
+          <SearchCommand />
           {children}
         </ThemeProvider>
       </body>

@@ -4,8 +4,9 @@ import { ModeToggle } from "@/components/mode-toggle";
 import { ProposalList } from "@/components/proposal-list";
 import { SearchLink } from "@/components/search-link";
 import { Logo } from "@/components/logo";
+import { Navbar } from "@/components/navbar";
 import { ChevronsLeft, ChevronsRight, MenuIcon } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useParams } from "next/navigation";
 import Link from "next/link";
 import { ElementRef, useRef, useEffect, useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
@@ -19,6 +20,7 @@ interface NavigationProps {
 export const Navigation: React.FC<NavigationProps> = ({ proposals }) => {
   const pathname = usePathname();
   const isMobile = useMediaQuery("(max-width: 768px)");
+  const params = useParams();
 
   const isResizingRef = useRef(false);
   const sidebarRef = useRef<ElementRef<"aside">>(null);
@@ -149,31 +151,35 @@ export const Navigation: React.FC<NavigationProps> = ({ proposals }) => {
           </div>
         </div>
       </aside>
-      {/* Container for hamburger menu when sidebar is collapsed */}
+
       <div
-        ref={navbarRef}
         className={cn(
-          "absolute top-0 left-60 h-16 w-[calc(100%-240px)] z-[9999]",
+          `absolute top-0 z-[99999] left-60 w-[calc(100%-240px)]`,
           isResetting && "transition-all ease-in-out duration-300",
           isMobile && "left-0 w-full"
         )}
+        ref={navbarRef}
       >
-        <nav className="bg-transparent px-3 py-2 w-full">
-          {isCollapsed && (
-            <div className="relative group">
-              <MenuIcon
-                onClick={resetWidth}
-                role="button"
-                className="h-6 w-6 text-muted-foreground group-hover:opacity-0 transition-opacity"
-              />
-              <ChevronsRight
-                onClick={resetWidth}
-                role="button"
-                className="h-6 w-6 text-muted-foreground absolute top-0 left-0 opacity-0 group-hover:opacity-100 transition-opacity"
-              />
-            </div>
-          )}
-        </nav>
+        {!!params.documentId ? (
+          <Navbar isCollapsed={isCollapsed} onResetWidth={resetWidth} />
+        ) : (
+          <nav className="bg-transparent px-3 py-2 w-full">
+            {isCollapsed && (
+              <div className="relative group">
+                <MenuIcon
+                  onClick={resetWidth}
+                  role="button"
+                  className="h-6 w-6 text-muted-foreground group-hover:opacity-0 transition-opacity"
+                />
+                <ChevronsRight
+                  onClick={resetWidth}
+                  role="button"
+                  className="h-6 w-6 text-muted-foreground absolute top-0 left-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                />
+              </div>
+            )}
+          </nav>
+        )}
       </div>
     </>
   );

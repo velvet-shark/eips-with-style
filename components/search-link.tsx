@@ -1,12 +1,15 @@
 "use client";
 
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import { useSearch } from "@/hooks/use-search";
 
 export function SearchLink() {
+  const search = useSearch();
+
   return (
     <div
       className="group min-h-[30px] text-sm py-1.5 px-2 mx-2 rounded-md hover:bg-primary/10 flex items-center font-medium bg-primary/5 text-primary"
-      // onClick={onClick}
+      onClick={search.onOpen}
       role="button"
     >
       <MagnifyingGlassIcon className="shrink-0 w-[18px] h-[18px] mr-2 text-muted-foreground" />

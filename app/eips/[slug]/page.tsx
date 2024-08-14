@@ -3,6 +3,7 @@ import { Navigation } from "@/components/navigation";
 import Proposal from "@/components/proposal";
 import { redirect } from "next/navigation";
 import { Proposal as ProposalType } from "@/lib/types";
+import { SearchCommand } from "@/components/search-command";
 
 export default async function ProposalPage({ params }: { params: { slug: string } }) {
   const supabase = createBrowserClient();
@@ -24,6 +25,7 @@ export default async function ProposalPage({ params }: { params: { slug: string 
     <div className="flex h-full dark:bg-[#1f1f1f]">
       <Navigation proposals={proposals || []} />
       <main className="flex-1 h-full overflow-y-auto">
+        <SearchCommand />
         <div className="flex-1 px-6 pb-10 items-center justify-center md:justify-start  gap-y-8">
           <h1 className="text-4xl font-bold mb-4">
             {proposal.proposal_type}-{proposal.number}: {proposal.title}
