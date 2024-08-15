@@ -25,7 +25,7 @@ export default async function ProposalPage({ params }: { params: { slug: string 
       <Navigation proposals={proposals || []} />
       <main className="flex-1 h-full overflow-y-auto">
         <div className="flex-1 px-6 pb-10 items-center justify-center md:justify-start  gap-y-8">
-          <div className="pb-40">
+          <div className="pb-20">
             <div className="md:max-w-4xl lg:max-w-5xl mx-auto">
               <h1 className="text-5xl font-bold mb-6 mt-12 break-words text-[#3f3f3f] dark:text-[#cfcfcf]">
                 {proposal.proposal_type}-{proposal.number}: {proposal.title}

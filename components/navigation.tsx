@@ -145,7 +145,7 @@ export const Navigation: React.FC<NavigationProps> = ({ proposals }) => {
             className="opacity-0 group-hover/sidebar:opacity-100 transition cursor-ew-resize absolute h-full w-1 bg-primary/10 right-0 top-0"
           />
           {/* Container for the mode toggle button, positioned at the bottom, sticky */}
-          <div className="absolute sticky bottom-0 left-0 right-0 p-4 bg-secondary flex justify-center">
+          <div className="absolute sticky bottom-0 left-0 right-0 p-4 flex justify-center">
             <ModeToggle />
           </div>
         </div>
