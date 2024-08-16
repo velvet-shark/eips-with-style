@@ -2,6 +2,7 @@ import { createClient as createBrowserClient } from "@/utils/supabase/client";
 import { Navigation } from "@/components/navigation";
 import Proposal from "@/components/proposal";
 import { redirect } from "next/navigation";
+import RequiresLinks from "@/components/requires-links";
 import { Proposal as ProposalType } from "@/lib/types";
 
 import {
@@ -93,9 +94,7 @@ export default async function ProposalPage({ params }: { params: { slug: string 
                     </div>
                     Requires
                   </div>
-                  <div className="flex flex-1 gap-1 items-start self-stretch min-h-8 overflow-hidden text-sm py-1">
-                    {proposal.requires}
-                  </div>
+                  <RequiresLinks requires={proposal.requires.split(",").map((num: string) => num.trim())} />
                 </div>
                 <div className="relative flex items-start p-0 overflow-hidden">
                   <div className="flex self-stretch items-start flex-row flex-shrink-0 w-36 min-w-36 group text-sm py-1 text-muted-foreground font-medium">
