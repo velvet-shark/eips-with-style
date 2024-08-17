@@ -3,6 +3,7 @@ import { Navigation } from "@/components/navigation";
 import Proposal from "@/components/proposal";
 import { redirect } from "next/navigation";
 import RequiresLinks from "@/components/requires-links";
+import Authors from "@/components/authors";
 import { Proposal as ProposalType } from "@/lib/types";
 
 import {
@@ -84,7 +85,8 @@ export default async function ProposalPage({ params }: { params: { slug: string 
                     Authors
                   </div>
                   <div className="flex flex-1 gap-1 items-start self-stretch min-h-8 overflow-hidden text-sm py-1">
-                    {proposal.authors}
+                    {/* {proposal.authors} */}
+                    <Authors authors={proposal.authors} />
                   </div>
                 </div>
                 <div className="relative flex items-start p-0 overflow-hidden">
