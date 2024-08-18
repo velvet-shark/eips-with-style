@@ -17,7 +17,7 @@ const Authors: React.FC<AuthorLinksProps> = ({ authors }) => {
           // prettier-ignore
           <React.Fragment key={index}>
             {name.trim().replace(/\s+/g, " ")}
-            <span>(<Link href={`https://github.com/${username.slice(1)}`} className="text-blue-500 hover:underline">{username}</Link>){index <match.length ? ", " : ""}</span></React.Fragment>
+            <span>(<Link href={`https://github.com/${username.slice(1)}`} target="_blank" className="text-blue-500 hover:underline">{username}</Link>){index <match.length ? ", " : ""}</span></React.Fragment>
         );
       }
       // If no match, just return the trimmed part
