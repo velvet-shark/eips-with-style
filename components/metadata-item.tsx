@@ -18,7 +18,7 @@ const MetadataItem: React.FC<MetadataItemProps> = ({ icon: Icon, label, proposal
         </div>
         {label}
       </div>
-      <div className="flex flex-1 gap-1 items-start self-stretch min-h-8 overflow-hidden text-sm py-1">{children}</div>
+      <div className="flex flex-1 gap-1 items-start self-stretch overflow-hidden text-sm">{children}</div>
     </div>
   );
 };

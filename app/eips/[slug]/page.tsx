@@ -3,8 +3,10 @@ import { Navigation } from "@/components/navigation";
 import Proposal from "@/components/proposal";
 import { redirect } from "next/navigation";
 import MetadataItem from "@/components/metadata-item";
-import RequiresLinks from "@/components/requires-links";
 import Authors from "@/components/authors";
+import RequiresLinks from "@/components/requires-links";
+import LinkItem from "@/components/link-item";
+// import RequiresLinks from "@/components/requires-links";
 import MetadataGeneralInfo from "@/components/metadata-general-info";
 import { Proposal as ProposalType } from "@/lib/types";
 
@@ -85,17 +87,14 @@ export default async function ProposalPage({ params }: { params: { slug: string 
                   <RequiresLinks requires={proposal.requires.split(",").map((num: string) => num.trim())} />
                 </MetadataItem>
 
-                <div className="relative flex items-start p-0 overflow-hidden">
-                  <div className="flex self-stretch items-start flex-row flex-shrink-0 w-36 min-w-36 group text-sm py-1 text-muted-foreground font-medium">
-                    <div>
-                      <LinkIcon className="shrink-0 w-[18px] h-[18px] mr-2 text-muted-foreground" />
-                    </div>
-                    Links
-                  </div>
-                  <div className="flex flex-1 gap-1 items-start self-stretch min-h-8 overflow-hidden text-sm py-1">
-                    {proposal.official_url} {proposal.github_url} {proposal.discussion_url} {proposal.links}
-                  </div>
-                </div>
+                <MetadataItem icon={LinkIcon} label="Links" proposal={proposal}>
+                  <LinkItem
+                    official_url={proposal.official_url}
+                    github_url={proposal.github_url}
+                    discussion_url={proposal.discussion_url}
+                    links={proposal.links}
+                  />
+                </MetadataItem>
               </metadata>
               <Proposal proposal={proposal} />
             </div>

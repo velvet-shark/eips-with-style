@@ -6,7 +6,7 @@ interface RequiresLinksProps {
 
 const RequiresLinks: React.FC<RequiresLinksProps> = ({ requires }) => {
   return (
-    <div className="block self-stretch min-h-8 overflow-hidden text-sm py-1">
+    <div className="block self-stretch overflow-hidden text-sm py-1">
       {requires.map((number, index) => (
         <>
           <Link key={number} href={`/eips/eip-${number}`} className="text-blue-500 hover:underline">
