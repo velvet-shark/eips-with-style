@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import MetadataItem from "@/components/metadata-item";
 import RequiresLinks from "@/components/requires-links";
 import Authors from "@/components/authors";
+import MetadataGeneralInfo from "@/components/metadata-general-info";
 import { Proposal as ProposalType } from "@/lib/types";
 
 import {
@@ -68,14 +69,19 @@ export default async function ProposalPage({ params }: { params: { slug: string 
               )}
               <metadata className="flex flex-col gap-[3px]">
                 <MetadataItem icon={MetadataIcon} label="Metadata" proposal={proposal}>
-                  {proposal.status} / {proposal.type}: {proposal.category} / {proposal.created_at}
+                  <MetadataGeneralInfo
+                    status={proposal.status}
+                    type={proposal.type}
+                    category={proposal.category}
+                    createdAt={proposal.created_at}
+                  />
                 </MetadataItem>
 
                 <MetadataItem icon={AuthorsIcon} label="Authors" proposal={proposal}>
                   <Authors authors={proposal.authors} />
                 </MetadataItem>
 
-                <MetadataItem icon={RequiresIcon} label="Authors" proposal={proposal}>
+                <MetadataItem icon={RequiresIcon} label="Requires" proposal={proposal}>
                   <RequiresLinks requires={proposal.requires.split(",").map((num: string) => num.trim())} />
                 </MetadataItem>
 
