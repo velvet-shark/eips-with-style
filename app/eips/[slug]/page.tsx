@@ -67,28 +67,18 @@ export default async function ProposalPage({ params }: { params: { slug: string 
                 <hr className="border-t border-gray-200 dark:border-gray-700 my-2" />
               )}
               <metadata className="flex flex-col gap-[3px]">
-                <MetadataItem icon={MetadataIcon} label="Metadata" proposal={proposal} />
-                <div className="relative flex items-start p-0 overflow-hidden">
-                  <div className="flex self-stretch items-start flex-row flex-shrink-0 w-36 min-w-36 group text-sm py-1 text-muted-foreground font-medium">
-                    <div>
-                      <AuthorsIcon className="shrink-0 w-[18px] h-[18px] mr-2 text-muted-foreground" />
-                    </div>
-                    Authors
-                  </div>
-                  {/* <div className="flex-1 gap-1 items-start self-stretch min-h-8 overflow-hidden text-sm py-1"> */}
-                  <div className="flex-1 text-sm py-1 whitespace-normal overflow-wrap-normal">
-                    <Authors authors={proposal.authors} />
-                  </div>
-                </div>
-                <div className="relative flex items-start p-0 overflow-hidden">
-                  <div className="flex self-stretch items-start flex-row flex-shrink-0 w-36 min-w-36 group text-sm py-1 text-muted-foreground font-medium">
-                    <div>
-                      <RequiresIcon className="shrink-0 w-[18px] h-[18px] mr-2 text-muted-foreground" />
-                    </div>
-                    Requires
-                  </div>
+                <MetadataItem icon={MetadataIcon} label="Metadata" proposal={proposal}>
+                  {proposal.status} / {proposal.type}: {proposal.category} / {proposal.created_at}
+                </MetadataItem>
+
+                <MetadataItem icon={AuthorsIcon} label="Authors" proposal={proposal}>
+                  <Authors authors={proposal.authors} />
+                </MetadataItem>
+
+                <MetadataItem icon={RequiresIcon} label="Authors" proposal={proposal}>
                   <RequiresLinks requires={proposal.requires.split(",").map((num: string) => num.trim())} />
-                </div>
+                </MetadataItem>
+
                 <div className="relative flex items-start p-0 overflow-hidden">
                   <div className="flex self-stretch items-start flex-row flex-shrink-0 w-36 min-w-36 group text-sm py-1 text-muted-foreground font-medium">
                     <div>
@@ -109,4 +99,3 @@ export default async function ProposalPage({ params }: { params: { slug: string 
     </div>
   );
 }
-// // w-6 h-6 text-muted-foreground rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600 absolute top-3 right-2 opacity-0 group-hover/sidebar:opacity-100 transition

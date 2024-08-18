@@ -30,11 +30,7 @@ const Authors: React.FC<AuthorLinksProps> = ({ authors }) => {
     });
   };
 
-  return (
-    <div className="flex flex-1 gap-1 items-start self-stretch min-h-8 overflow-hidden text-sm py-1">
-      {renderAuthors()}
-    </div>
-  );
+  return <div className="block self-stretch min-h-8 overflow-hidden text-sm py-1">{renderAuthors()}</div>;
 };
 
 export default Authors;
