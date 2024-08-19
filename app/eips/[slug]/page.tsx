@@ -83,9 +83,11 @@ export default async function ProposalPage({ params }: { params: { slug: string 
                   <Authors authors={proposal.authors} />
                 </MetadataItem>
 
-                <MetadataItem icon={RequiresIcon} label="Requires" proposal={proposal}>
-                  <RequiresLinks requires={proposal.requires.split(",").map((num: string) => num.trim())} />
-                </MetadataItem>
+                {proposal.requires && (
+                  <MetadataItem icon={RequiresIcon} label="Requires" proposal={proposal}>
+                    <RequiresLinks requires={proposal.requires.split(",").map((num: string) => num.trim())} />
+                  </MetadataItem>
+                )}
 
                 <MetadataItem icon={LinkIcon} label="Links" proposal={proposal}>
                   <LinkItem

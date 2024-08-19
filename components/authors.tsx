@@ -8,16 +8,28 @@ interface AuthorLinksProps {
 const Authors: React.FC<AuthorLinksProps> = ({ authors }) => {
   const renderAuthors = () => {
     // Split the string by commas, preserving spaces after parentheses
-    return authors.split(/(?<=\))\s*,\s*/).map((part, index) => {
+    const authorParts = authors.split(/(?<=\))\s*,\s*/);
+    return authorParts.map((part, index) => {
       // Use regex to match the name and username, accounting for extra spaces
-      const match = part.match(/^(.+?)\s*\((@\w+)\)\s*$/); // \(@([^)]+)\)
+      const match = part.match(/^(.+?)\s*\((@\w+)\)\s*$/);
       if (match) {
         const [, name, username] = match;
         return (
-          // prettier-ignore
           <React.Fragment key={index}>
-            {name.trim().replace(/\s+/g, " ")}
-            <span>(<Link href={`https://github.com/${username.slice(1)}`} target="_blank" className="text-blue-500 hover:underline">{username}</Link>){index <match.length ? ", " : ""}</span></React.Fragment>
+            {name.trim().replace(/\s+/g, " ")}{" "}
+            <span>
+              (
+              <Link
+                href={`https://github.com/${username.slice(1)}`}
+                target="_blank"
+                className="text-blue-500 hover:underline"
+              >
+                {username}
+              </Link>
+              )
+            </span>
+            {authorParts.length > 1 && index < authorParts.length - 1 && ", "}
+          </React.Fragment>
         );
       }
       // If no match, just return the trimmed part

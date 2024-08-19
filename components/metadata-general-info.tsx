@@ -39,7 +39,11 @@ const MetadataGeneralInfo: React.FC<MetadataGeneralInfoProps> = ({ status, type,
   return (
     <div className="flex flex-wrap gap-2">
       <MetadataBadge color={color} icon={icon} content={`Status: ${status}`} />
-      <MetadataBadge color="bg-green-100 text-green-800" icon={FolderIcon} content={`${type}: ${category}`} />
+      <MetadataBadge
+        color="bg-green-100 text-green-800"
+        icon={FolderIcon}
+        content={category ? `${type}: ${category}` : type}
+      />
       <MetadataBadge color="bg-gray-100 text-gray-800" icon={ClockIcon} content={`Created: ${formatDate(createdAt)}`} />
     </div>
   );
