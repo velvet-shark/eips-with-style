@@ -5,6 +5,8 @@ import { ProposalList } from "@/components/proposal-list";
 import { SearchLink } from "@/components/search-link";
 import { Logo } from "@/components/logo";
 import { ChevronsLeft, ChevronsRight, MenuIcon } from "lucide-react";
+import { TwitterLogoIcon, GitHubLogoIcon } from "@radix-ui/react-icons";
+import { Button } from "@/components/ui/button";
 import { usePathname, useParams } from "next/navigation";
 import Link from "next/link";
 import { ElementRef, useRef, useEffect, useState } from "react";
@@ -21,11 +23,32 @@ export const Navigation: React.FC<NavigationProps> = ({ proposals }) => {
   const isMobile = useMediaQuery("(max-width: 768px)");
   const params = useParams();
 
+  const [isScrolled, setIsScrolled] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
   const isResizingRef = useRef(false);
   const sidebarRef = useRef<ElementRef<"aside">>(null);
   const navbarRef = useRef<ElementRef<"div">>(null);
   const [isResetting, setIsResetting] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(isMobile);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (contentRef.current) {
+        setIsScrolled(contentRef.current.scrollTop > 0);
+      }
+    };
+
+    const currentContentRef = contentRef.current;
+    if (currentContentRef) {
+      currentContentRef.addEventListener("scroll", handleScroll);
+    }
+
+    return () => {
+      if (currentContentRef) {
+        currentContentRef.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (isMobile) {
@@ -105,8 +128,13 @@ export const Navigation: React.FC<NavigationProps> = ({ proposals }) => {
           isMobile && "w-0"
         )}
       >
-        <div>
-          <div className="block flex-shrink-0 flex-grow-0">
+        <div className="flex flex-col h-full">
+          <div
+            className={cn(
+              "sticky top-0 bg-secondary pb-2.5 z-10 transition-shadow duration-200",
+              isScrolled && "shadow-md dark:shadow-sm dark:shadow-gray-700"
+            )}
+          >
             {/* Collapse button */}
             <div
               onClick={collapse}
@@ -118,34 +146,49 @@ export const Navigation: React.FC<NavigationProps> = ({ proposals }) => {
             >
               <ChevronsLeft className="h-6 w-6" />
             </div>
-            <div>
-              {/* Logo and home link */}
-              <Link href="/">
-                <div className="flex items-center text-sm p-3 w-full hover:bg-primary/5" role="button">
-                  <div className="gap-x-2 flex items-center max-w-[150px]">
-                    <div className="w-5 h-5">
-                      <Logo />
-                    </div>
-                    <span className="text-start font-semibold line-clamp-1 pl-1">EIP.directory</span>
+            {/* Logo and home link */}
+            <Link href="/">
+              <div className="flex items-center text-sm p-3 w-full hover:bg-primary/5" role="button">
+                <div className="gap-x-2 flex items-center max-w-[150px]">
+                  <div className="w-5 h-5">
+                    <Logo />
                   </div>
+                  <span className="text-start font-semibold line-clamp-1 pl-1">EIP.directory</span>
                 </div>
-              </Link>
-              {/* Search form */}
-              <SearchLink />
+              </div>
+            </Link>
+            {/* Search form */}
+            <SearchLink />
+          </div>
+          <div ref={contentRef} className="flex-grow overflow-y-auto">
+            {/* Container for the featured proposals */}
+            <div className="mt-3">
+              <div className="group min-h-[27px] text-xs py-2 px-3 w-full hover:bg-primary/5 flex items-center text-muted-foreground/70 font-sm font-semibold">
+                Noteworthy & Featured
+              </div>
+              <ProposalList
+                proposals={proposals
+                  .filter((proposal) => proposal.featured)
+                  .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())}
+              />
             </div>
           </div>
-          {/* Container for the proposal list */}
-          <div className="mt-4">
-            <ProposalList proposals={proposals} />
-          </div>
-          {/* Resizer handle for adjusting sidebar width */}
-          <div
-            onMouseDown={handleMouseDown}
-            onClick={resetWidth}
-            className="opacity-0 group-hover/sidebar:opacity-100 transition cursor-ew-resize absolute h-full w-1 bg-primary/10 right-0 top-0"
-          />
-          {/* Container for the mode toggle button, positioned at the bottom, sticky */}
-          <div className="absolute sticky bottom-0 left-0 right-0 p-4 flex justify-center">
+          {/* Sticky footer */}
+          <div className="sticky bottom-0 left-0 right-0 p-4 flex justify-center space-x-4 bg-secondary">
+            <Button variant="outline" size="icon" asChild>
+              <Link href="https://twitter.com/velvet_shark" target="_blank" rel="noopener noreferrer">
+                <TwitterLogoIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />
+              </Link>
+            </Button>
+            <Button variant="outline" size="icon" asChild>
+              <Link
+                href="https://github.com/velvet-shark/eips-with-style.git"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <GitHubLogoIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all text-foreground/70 dark:text-foreground/90" />
+              </Link>
+            </Button>
             <ModeToggle />
           </div>
         </div>
