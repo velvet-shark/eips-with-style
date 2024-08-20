@@ -7,11 +7,11 @@ interface AuthorLinksProps {
 
 const Authors: React.FC<AuthorLinksProps> = ({ authors }) => {
   const renderAuthors = () => {
-    // Split the string by commas, preserving spaces after parentheses
-    const authorParts = authors.split(/(?<=\))\s*,\s*/);
+    // Split the string by commas, but not within parentheses
+    const authorParts = authors.split(/,\s*(?![^(]*\))/);
     return authorParts.map((part, index) => {
-      // Use regex to match the name and username, accounting for extra spaces
-      const match = part.match(/^(.+?)\s*\((@\w+)\)\s*$/);
+      // Use regex to match the name and username, accounting for dashes and underscores
+      const match = part.match(/^(.+?)\s*\((@[\w-]+)\)\s*$/);
       if (match) {
         const [, name, username] = match;
         return (
@@ -28,15 +28,15 @@ const Authors: React.FC<AuthorLinksProps> = ({ authors }) => {
               </Link>
               )
             </span>
-            {authorParts.length > 1 && index < authorParts.length - 1 && ", "}
+            {index < authorParts.length - 1 && ", "}
           </React.Fragment>
         );
       }
       // If no match, just return the trimmed part
       return (
         <React.Fragment key={index}>
-          {index > 0 && ", "}
           {part.trim()}
+          {index < authorParts.length - 1 && ", "}
         </React.Fragment>
       );
     });

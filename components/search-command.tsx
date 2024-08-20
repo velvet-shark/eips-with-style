@@ -18,6 +18,8 @@ import { createClient as createBrowserClient } from "@/utils/supabase/client";
 export function SearchCommand() {
   const router = useRouter();
   const [proposals, setProposals] = useState<ProposalShort[]>([]);
+  const [filteredProposals, setFilteredProposals] = useState<ProposalShort[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     const fetchProposals = async () => {
@@ -27,11 +29,13 @@ export function SearchCommand() {
         console.error("Error fetching proposals:", error);
       } else {
         setProposals(data || []);
+        setFilteredProposals(data?.filter((proposal) => proposal.featured) || []);
       }
     };
 
     fetchProposals();
   }, []);
+
   const [isMounted, setIsMounted] = useState(false);
 
   const toggle = useSearch((store) => store.toggle);
@@ -60,17 +64,29 @@ export function SearchCommand() {
     onClose();
   };
 
+  const handleSearch = (value: string) => {
+    setIsSearching(value.length > 0);
+    const searchTerm = value.toLowerCase();
+    const filtered = proposals.filter(
+      (proposal) =>
+        proposal.number.toString().includes(searchTerm) ||
+        proposal.title.toLowerCase().includes(searchTerm) ||
+        proposal.slug.toLowerCase().includes(searchTerm)
+    );
+    setFilteredProposals(filtered);
+  };
+
   if (!isMounted) {
     return null;
   }
 
   return (
     <CommandDialog open={isOpen} onOpenChange={onClose}>
-      <CommandInput placeholder={"Search EIP, ERC, CAIP, or RIP"} />
+      <CommandInput placeholder={"Search EIP, ERC, CAIP, or RIP"} onValueChange={handleSearch} />
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
-        <CommandGroup heading="Proposals">
-          {proposals?.map((proposal) => (
+        <CommandGroup heading={isSearching ? "Search Results" : "Featured Proposals"}>
+          {filteredProposals.map((proposal) => (
             <CommandItem
               key={proposal.id}
               value={`${proposal.id}`}

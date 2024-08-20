@@ -3,6 +3,7 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import { SearchCommand } from "@/components/search-command";
 import { siteConfig } from "@/config/site";
 import { createClient as createBrowserClient } from "@/utils/supabase/client";
+import { ProposalProvider } from "@/contexts/ProposalContext";
 
 export const metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -25,9 +26,6 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const supabase = createBrowserClient();
-  const { data: proposals } = await supabase.from("proposals").select("*");
-
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -48,8 +46,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           disableTransitionOnChange
           storageKey="website-theme"
         >
-          <SearchCommand />
-          {children}
+          <ProposalProvider>
+            <SearchCommand />
+            {children}
+          </ProposalProvider>
         </ThemeProvider>
       </body>
     </html>

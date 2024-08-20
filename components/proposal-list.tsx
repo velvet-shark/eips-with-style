@@ -16,32 +16,30 @@ interface ProposalListProps {
 }
 
 export const ProposalList: React.FC<ProposalListProps> = ({ proposals }) => {
+  if (!proposals || proposals.length === 0) {
+    return <p className="text-sm text-muted-foreground p-3">No featured proposals at the moment.</p>;
+  }
+
   return (
-    <>
-      {proposals && proposals.length > 0 ? (
-        <div>
-          {proposals.map((proposal) => (
-            <div
-              key={proposal.id}
-              className="group min-h-[27px] text-sm py-1 px-3 w-full hover:bg-primary/5 flex items-center text-muted-foreground font-medium"
-            >
-              <Link
-                href={`/${proposal.proposal_type.toLowerCase()}s/${proposal.slug.toLowerCase()}`}
-                className="flex items-center w-full"
-              >
-                <div>
-                  <EIPIcon className="shrink-0 w-[18px] h-[18px] mr-2 text-muted-foreground" />
-                </div>
-                <span className="truncate">
-                  {proposal.proposal_type}-{proposal.number} {proposal.title}
-                </span>
-              </Link>
+    <div>
+      {proposals.map((proposal) => (
+        <div
+          key={proposal.id}
+          className="group min-h-[27px] text-sm py-1 px-3 w-full hover:bg-primary/5 flex items-center text-muted-foreground font-medium"
+        >
+          <Link
+            href={`/${proposal.proposal_type.toLowerCase()}s/${proposal.slug.toLowerCase()}`}
+            className="flex items-center w-full"
+          >
+            <div>
+              <EIPIcon className="shrink-0 w-[18px] h-[18px] mr-2 text-muted-foreground" />
             </div>
-          ))}
+            <span className="truncate">
+              {proposal.proposal_type}-{proposal.number} {proposal.title}
+            </span>
+          </Link>
         </div>
-      ) : (
-        <p>No proposals found.</p>
-      )}
-    </>
+      ))}
+    </div>
   );
 };

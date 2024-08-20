@@ -11,14 +11,12 @@ import { usePathname, useParams } from "next/navigation";
 import Link from "next/link";
 import { ElementRef, useRef, useEffect, useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
+import { useProposals } from "@/contexts/ProposalContext";
 
 import { cn } from "@/lib/utils";
 
-interface NavigationProps {
-  proposals: any[]; // Adjust the type according to your data structure
-}
-
-export const Navigation: React.FC<NavigationProps> = ({ proposals }) => {
+export const Navigation: React.FC = () => {
+  const { featuredProposals } = useProposals();
   const pathname = usePathname();
   const isMobile = useMediaQuery("(max-width: 768px)");
   const params = useParams();
@@ -166,11 +164,7 @@ export const Navigation: React.FC<NavigationProps> = ({ proposals }) => {
               <div className="group min-h-[27px] text-xs py-2 px-3 w-full hover:bg-primary/5 flex items-center text-muted-foreground/70 font-sm font-semibold">
                 Noteworthy & Featured
               </div>
-              <ProposalList
-                proposals={proposals
-                  .filter((proposal) => proposal.featured)
-                  .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())}
-              />
+              <ProposalList proposals={featuredProposals} />
             </div>
           </div>
           {/* Sticky footer */}

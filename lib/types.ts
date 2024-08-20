@@ -4,7 +4,7 @@ interface ProposalShort {
   number: number;
   slug: string;
   title: string;
-  description: string;
+  created_at: string;
 }
 
 interface Proposal {
