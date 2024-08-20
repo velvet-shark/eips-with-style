@@ -1,7 +1,7 @@
-import { createClient as createBrowserClient } from "@/utils/supabase/client";
-import { Navigation } from "@/components/navigation";
+import { Metadata, ResolvingMetadata } from "next";
+import { createClient } from "@/utils/supabase/server";
+import ClientNavigation from "@/components/client-navigation";
 import Proposal from "@/components/proposal";
-import { redirect } from "next/navigation";
 import MetadataItem from "@/components/metadata-item";
 import Authors from "@/components/authors";
 import RequiresLinks from "@/components/requires-links";
@@ -9,6 +9,7 @@ import LinkItem from "@/components/link-item";
 import MetadataGeneralInfo from "@/components/metadata-general-info";
 import { Proposal as ProposalType } from "@/lib/types";
 import { replaceImageUrls } from "@/lib/utils";
+import { redirect } from "next/navigation";
 
 import {
   ChevronsLeftRightIcon as MetadataIcon,
@@ -17,31 +18,59 @@ import {
   LinkIcon
 } from "lucide-react";
 
-export default async function ProposalPage({ params }: { params: { proposalType: string; slug: string } }) {
-  let { proposalType, slug } = params;
+type Props = {
+  params: { proposalType: string; slug: string };
+};
 
-  // Normalize proposalType
-  proposalType = proposalType.toLowerCase();
-  if (!["eips", "ercs", "caips", "rips"].includes(proposalType)) {
-    redirect("/error");
+export async function generateMetadata({ params }: Props, parent: ResolvingMetadata): Promise<Metadata> {
+  const { proposalType, slug } = params;
+  const supabase = createClient();
+
+  const { data: proposal } = await supabase
+    .from("proposals")
+    .select("*")
+    .eq("slug", slug)
+    .eq("proposal_type", proposalType.toUpperCase().slice(0, -1))
+    .single();
+
+  if (!proposal) {
+    return {
+      title: "Proposal Not Found"
+    };
   }
 
-  // Check if the slug ends with ".md" and remove it
-  if (slug.endsWith(".md")) {
-    slug = slug.slice(0, -3); // Remove the last 3 characters ('.md')
-    redirect(`/${proposalType}/${slug}`);
-  }
+  return {
+    title: `${proposal.proposal_type}-${proposal.number}: ${proposal.title} | EIP.directory`,
+    description: proposal.description,
+    openGraph: {
+      title: `${proposal.proposal_type}-${proposal.number}: ${proposal.title}`,
+      description: proposal.description,
+      url: `https://eip.directory/${proposalType}/${slug}`,
+      siteName: "EIP.directory",
+      images: [
+        {
+          url: "/path/to/your/og-image.jpg",
+          width: 1200,
+          height: 630
+        }
+      ],
+      locale: "en_US",
+      type: "website"
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${proposal.proposal_type}-${proposal.number}: ${proposal.title}`,
+      description: proposal.description,
+      images: ["/path/to/your/twitter-image.jpg"]
+    }
+  };
+}
 
-  const supabase = createBrowserClient();
+export default async function ProposalPage({ params }: Props) {
+  const { proposalType, slug } = params;
+  const supabase = createClient();
 
-  // Fetch proposals from Supabase
-  const { data: proposals, error } = await supabase.from("proposals").select("*");
-  if (error) {
-    console.error("Error fetching proposals:", error);
-  }
-
-  // Function to fetch a proposal
-  const fetchProposal = async (type: string, proposalSlug: string) => {
+  async function checkProposal(type: string, proposalSlug: string) {
     const { data } = await supabase
       .from("proposals")
       .select("*")
@@ -49,15 +78,14 @@ export default async function ProposalPage({ params }: { params: { proposalType:
       .eq("proposal_type", type.toUpperCase().slice(0, -1))
       .single();
     return data;
-  };
+  }
 
-  // Try to fetch the proposal
-  let proposal = await fetchProposal(proposalType, slug);
+  let proposal = await checkProposal(proposalType, slug);
 
   // If it's an EIP and not found, check if it exists as an ERC
   if (!proposal && proposalType === "eips") {
     const ercSlug = slug.replace("eip-", "erc-");
-    const ercProposal = await fetchProposal("ercs", ercSlug);
+    const ercProposal = await checkProposal("ercs", ercSlug);
     if (ercProposal) {
       redirect(`/ercs/${ercSlug}`);
     }
@@ -68,14 +96,11 @@ export default async function ProposalPage({ params }: { params: { proposalType:
     redirect("/404");
   }
 
-  // Process the proposal content to replace image URLs
-  if (proposal.content) {
-    proposal.content = replaceImageUrls(proposal.content);
-  }
+  proposal.content = replaceImageUrls(proposal.content);
 
   return (
     <div className="flex h-full dark:bg-[#1f1f1f]">
-      <Navigation proposals={proposals || []} />
+      <ClientNavigation />
       <main className="flex-1 h-full overflow-y-auto">
         <div className="flex-1 px-6 pb-10 items-center justify-center md:justify-start gap-y-8">
           <div className="pb-20">
@@ -91,7 +116,7 @@ export default async function ProposalPage({ params }: { params: { proposalType:
               ) : (
                 <hr className="border-t border-gray-200 dark:border-gray-700 my-2" />
               )}
-              <metadata className="flex flex-col gap-[3px]">
+              <div className="flex flex-col gap-[3px]">
                 <MetadataItem icon={MetadataIcon} label="Metadata" proposal={proposal}>
                   <MetadataGeneralInfo
                     status={proposal.status}
@@ -105,7 +130,13 @@ export default async function ProposalPage({ params }: { params: { proposalType:
                 </MetadataItem>
                 {proposal.requires && (
                   <MetadataItem icon={RequiresIcon} label="Requires" proposal={proposal}>
-                    <RequiresLinks requires={proposal.requires.split(",").map((num: string) => num.trim())} />
+                    <RequiresLinks
+                      requires={
+                        Array.isArray(proposal.requires)
+                          ? proposal.requires
+                          : proposal.requires.split(",").map((num: string) => num.trim())
+                      }
+                    />
                   </MetadataItem>
                 )}
                 <MetadataItem icon={LinkIcon} label="Links" proposal={proposal}>
@@ -116,7 +147,7 @@ export default async function ProposalPage({ params }: { params: { proposalType:
                     links={proposal.links}
                   />
                 </MetadataItem>
-              </metadata>
+              </div>
               <Proposal proposal={proposal} />
             </div>
           </div>

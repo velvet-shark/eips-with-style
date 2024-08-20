@@ -38,9 +38,13 @@ export default function ProposalContent({ proposal }: { proposal: Proposal }) {
             tr: ({ node, ...props }) => <tr className="border-b border-gray-300 dark:border-gray-600" {...props} />,
             td: ({ node, ...props }) => <td className="px-4 py-2" {...props} />,
             th: ({ node, ...props }) => <th className="px-4 py-2 font-semibold text-left" {...props} />,
-            ul: ({ node, ...props }) => <ul className="list-disc list-inside pl-4 my-4" {...props} />,
-            ol: ({ node, ...props }) => <ol className="list-decimal list-inside pl-4 my-4" {...props} />,
-            li: ({ node, ...props }) => <li className="my-1" {...props} />,
+            ul: ({ node, ...props }) => <ul className="list-disc pl-4 my-4 space-y-2" {...props} />,
+            ol: ({ node, ...props }) => <ol className="list-decimal pl-4 my-4 space-y-2" {...props} />,
+            li: ({ node, ...props }) => (
+              <li className="pl-2">
+                <span className="inline">{props.children}</span>
+              </li>
+            ),
             blockquote: ({ node, ...props }) => (
               <blockquote className="border-l-4 border-gray-300 pl-4 italic my-2" {...props} />
             ),

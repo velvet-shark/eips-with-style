@@ -2,18 +2,11 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
-
-type Proposal = {
-  id: number;
-  proposal_type: string;
-  number: number;
-  slug: string;
-  title: string;
-  created_at: string;
-};
+import { ProposalShort } from "@/lib/types";
 
 interface ProposalContextType {
-  featuredProposals: Proposal[];
+  featuredProposals: ProposalShort[];
+  allProposals: ProposalShort[];
 }
 
 const ProposalContext = createContext<ProposalContextType | undefined>(undefined);
@@ -27,30 +20,38 @@ export const useProposals = () => {
 };
 
 export const ProposalProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [featuredProposals, setFeaturedProposals] = useState<Proposal[]>([]);
+  const [featuredProposals, setFeaturedProposals] = useState<ProposalShort[]>([]);
+  const [allProposals, setAllProposals] = useState<ProposalShort[]>([]);
 
   useEffect(() => {
     const fetchProposals = async () => {
-      const cachedProposals = localStorage.getItem("featuredProposals");
-      if (cachedProposals) {
-        setFeaturedProposals(JSON.parse(cachedProposals));
-      } else {
-        const supabase = createClient();
-        const { data, error } = await supabase
-          .from("proposals")
-          .select("id, proposal_type, number, slug, title, created_at")
-          .filter("featured", "eq", true)
-          .order("created_at", { ascending: false });
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from("proposals")
+        .select("id, proposal_type, number, slug, title, featured, created_at")
+        .order("created_at", { ascending: false });
 
-        if (data && !error) {
-          setFeaturedProposals(data);
-          localStorage.setItem("featuredProposals", JSON.stringify(data));
-        }
+      if (data && !error) {
+        setAllProposals(data);
+        const featured = data.filter((proposal) => proposal.featured);
+        setFeaturedProposals(featured);
+
+        // Optionally, you can still use localStorage for caching if needed
+        localStorage.setItem("allProposals", JSON.stringify(data));
+        localStorage.setItem("featuredProposals", JSON.stringify(featured));
       }
     };
+
+    const cachedAllProposals = localStorage.getItem("allProposals");
+    const cachedFeaturedProposals = localStorage.getItem("featuredProposals");
+
+    if (cachedAllProposals && cachedFeaturedProposals) {
+      setAllProposals(JSON.parse(cachedAllProposals));
+      setFeaturedProposals(JSON.parse(cachedFeaturedProposals));
+    }
 
     fetchProposals();
   }, []);
 
-  return <ProposalContext.Provider value={{ featuredProposals }}>{children}</ProposalContext.Provider>;
+  return <ProposalContext.Provider value={{ featuredProposals, allProposals }}>{children}</ProposalContext.Provider>;
 };

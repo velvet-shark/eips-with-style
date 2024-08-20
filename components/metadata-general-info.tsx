@@ -26,15 +26,22 @@ const statusConfig = {
   Review: { color: "bg-purple-100 text-purple-800", icon: FileTextIcon },
   Draft: { color: "bg-gray-100 text-gray-800", icon: FileTextIcon },
   Stagnant: { color: "bg-orange-100 text-orange-800", icon: AlertCircleIcon },
-  Withdrawn: { color: "bg-red-100 text-red-800", icon: XCircleIcon }
+  Withdrawn: { color: "bg-red-100 text-red-800", icon: XCircleIcon },
+  Superseded: { color: "bg-red-100 text-red-800", icon: XCircleIcon }
 };
 
+const defaultStatus = { color: "bg-gray-100 text-gray-800", icon: AlertCircleIcon };
+
 const formatDate = (dateString: string): string => {
-  return new Date(dateString).toISOString().split("T")[0];
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) {
+    return "Invalid Date";
+  }
+  return date.toISOString().split("T")[0];
 };
 
 const MetadataGeneralInfo: React.FC<MetadataGeneralInfoProps> = ({ status, type, category, createdAt }) => {
-  const { color, icon } = statusConfig[status];
+  const { color, icon } = statusConfig[status as StatusType] || defaultStatus;
 
   return (
     <div className="flex flex-wrap gap-2">

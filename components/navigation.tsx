@@ -15,7 +15,11 @@ import { useProposals } from "@/contexts/ProposalContext";
 
 import { cn } from "@/lib/utils";
 
-export const Navigation: React.FC = () => {
+export interface NavigationProps {
+  proposals: any[]; // Replace 'any' with a more specific type if possible
+}
+
+export const Navigation: React.FC<NavigationProps> = ({ proposals }) => {
   const { featuredProposals } = useProposals();
   const pathname = usePathname();
   const isMobile = useMediaQuery("(max-width: 768px)");
@@ -164,7 +168,7 @@ export const Navigation: React.FC = () => {
               <div className="group min-h-[27px] text-xs py-2 px-3 w-full hover:bg-primary/5 flex items-center text-muted-foreground/70 font-sm font-semibold">
                 Noteworthy & Featured
               </div>
-              <ProposalList proposals={featuredProposals} />
+              <ProposalList proposals={featuredProposals.map((p) => ({ ...p, featured: true }))} />
             </div>
           </div>
           {/* Sticky footer */}

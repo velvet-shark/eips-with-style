@@ -7,6 +7,8 @@ interface AuthorLinksProps {
 
 const Authors: React.FC<AuthorLinksProps> = ({ authors }) => {
   const renderAuthors = () => {
+    if (!authors) return null;
+
     // Split the string by commas, but not within parentheses
     const authorParts = authors.split(/,\s*(?![^(]*\))/);
     return authorParts.map((part, index) => {

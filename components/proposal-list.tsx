@@ -32,7 +32,18 @@ export const ProposalList: React.FC<ProposalListProps> = ({ proposals }) => {
             className="flex items-center w-full"
           >
             <div>
-              <EIPIcon className="shrink-0 w-[18px] h-[18px] mr-2 text-muted-foreground" />
+              {proposal.proposal_type === "EIP" && (
+                <EIPIcon className="shrink-0 w-[18px] h-[18px] mr-2 text-muted-foreground" />
+              )}
+              {proposal.proposal_type === "ERC" && (
+                <ERCIcon className="shrink-0 w-[18px] h-[18px] mr-2 text-muted-foreground" />
+              )}
+              {proposal.proposal_type === "CAIP" && (
+                <CAIPIcon className="shrink-0 w-[18px] h-[18px] mr-2 text-muted-foreground" />
+              )}
+              {proposal.proposal_type === "RIP" && (
+                <RIPIcon className="shrink-0 w-[18px] h-[18px] mr-2 text-muted-foreground" />
+              )}
             </div>
             <span className="truncate">
               {proposal.proposal_type}-{proposal.number} {proposal.title}

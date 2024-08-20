@@ -2,13 +2,10 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { SearchCommand } from "@/components/search-command";
 import { siteConfig } from "@/config/site";
-import { createClient as createBrowserClient } from "@/utils/supabase/client";
 import { ProposalProvider } from "@/contexts/ProposalContext";
 
 export const metadata = {
   metadataBase: new URL(siteConfig.url),
-  title: siteConfig.title,
-  description: siteConfig.description,
   icons: {
     icon: [
       {
@@ -28,16 +25,6 @@ export const metadata = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <title>{siteConfig.title}</title>
-        <meta property="twitter:card" content="summary_large_image"></meta>
-        <meta property="twitter:title" content={siteConfig.name}></meta>
-        <meta property="twitter:description" content={siteConfig.description}></meta>
-        <meta property="og:site_name" content={siteConfig.name}></meta>
-        <meta property="og:description" content={siteConfig.description}></meta>
-        <meta property="og:title" content={siteConfig.name}></meta>
-        <meta property="og:url" content={siteConfig.url}></meta>
-      </head>
       <body>
         <ThemeProvider
           attribute="class"

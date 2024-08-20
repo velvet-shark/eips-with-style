@@ -17,6 +17,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
     "geist": "^1.2.1",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.424.0",
     "next": "latest",
     "next-themes": "^0.3.0",
@@ -37,6 +38,7 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.14",
+    "@types/lodash": "^4.17.7",
     "@types/node": "20.11.5",
     "@types/react": "18.2.48",
     "@types/react-dom": "18.2.18",
