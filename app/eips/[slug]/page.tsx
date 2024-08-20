@@ -6,9 +6,9 @@ import MetadataItem from "@/components/metadata-item";
 import Authors from "@/components/authors";
 import RequiresLinks from "@/components/requires-links";
 import LinkItem from "@/components/link-item";
-// import RequiresLinks from "@/components/requires-links";
 import MetadataGeneralInfo from "@/components/metadata-general-info";
 import { Proposal as ProposalType } from "@/lib/types";
+import { replaceImageUrls } from "@/lib/utils";
 
 import {
   ChevronsLeftRightIcon as MetadataIcon,
@@ -18,8 +18,15 @@ import {
 } from "lucide-react";
 
 export default async function ProposalPage({ params }: { params: { slug: string } }) {
+  let slug = params.slug;
+
+  // Check if the slug ends with ".md" and remove it
+  if (slug.endsWith(".md")) {
+    slug = slug.slice(0, -3); // Remove the last 3 characters ('.md')
+    redirect(`/eips/${slug}`);
+  }
+
   const supabase = createBrowserClient();
-  const slug = params.slug;
 
   // Fetch proposals from Supabase
   const { data: proposals, error } = await supabase.from("proposals").select("*");
@@ -31,6 +38,11 @@ export default async function ProposalPage({ params }: { params: { slug: string 
 
   if (!proposal) {
     redirect("/error");
+  }
+
+  // Process the proposal content to replace image URLs
+  if (proposal.content) {
+    proposal.content = replaceImageUrls(proposal.content);
   }
 
   return (
