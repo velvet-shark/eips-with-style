@@ -62,7 +62,7 @@ export default function ClientIndex() {
               </p>
             </div>
 
-            <footer className="mt-[5rem] text-sm text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-4">
+            <footer className="mt-[7rem] text-sm text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-4">
               <div className="flex flex-col items-start justify-center gap-2 mt-2">
                 <div className="flex items-start mb-2">
                   <svg
@@ -78,13 +78,13 @@ export default function ClientIndex() {
                     />
                   </svg>
                   <span className="text-left">
-                    You can find the code for this project on GitHub at{" "}
+                    You can find the code for this project on{" "}
                     <a
                       href="https://github.com/velvet-shark/eips-with-style"
                       className="text-blue-500 hover:underline"
                       target="_blank"
                     >
-                      https://github.com/velvet-shark/eips-with-style
+                      GitHub
                     </a>
                     . Feel free to submit pull requests or open issues there.
                   </span>
