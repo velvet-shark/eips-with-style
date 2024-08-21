@@ -17,9 +17,12 @@ async function getFontData() {
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const proposal = searchParams.get("proposal");
+  const type = searchParams.get("type");
+  const number = searchParams.get("number");
   const title = searchParams.get("title");
   const fontData = await getFontData();
+
+  const proposal = `${type}-${number}`;
 
   return new ImageResponse(
     (
