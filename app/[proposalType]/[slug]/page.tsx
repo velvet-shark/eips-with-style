@@ -119,7 +119,25 @@ export default async function ProposalPage({ params }: Props) {
               <h3 className="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-300">{proposal.description}</h3>
               {proposal.title_descriptive || proposal.why_important ? (
                 <div className="bg-yellow-50 dark:bg-blue-900 p-4 rounded-lg shadow-sm mb-6 border-orange-300 dark:border-transparent border">
-                  {/* ... (keep existing code for title_descriptive and why_important) */}
+                  <div className="w-fit bg-orange-100 text-orange-800 text-xs font-semibold px-2.5 py-0.5 mb-2 rounded dark:bg-blue-200 dark:text-blue-800">
+                    In simple terms
+                  </div>
+                  {proposal.title_descriptive && (
+                    <>
+                      <h4 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">
+                        What does {proposal.proposal_type}-{proposal.number} do?
+                      </h4>
+                      <p className="mb-4 text-gray-700 dark:text-gray-300">{proposal.title_descriptive}</p>
+                    </>
+                  )}
+                  {proposal.why_important && (
+                    <>
+                      <h4 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">
+                        Why is it important?
+                      </h4>
+                      <p className="text-gray-700 dark:text-gray-300">{proposal.why_important}</p>
+                    </>
+                  )}
                 </div>
               ) : (
                 <hr className="border-t border-gray-200 dark:border-gray-700 my-2" />

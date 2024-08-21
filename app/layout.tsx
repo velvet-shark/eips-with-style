@@ -3,6 +3,7 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import { SearchCommand } from "@/components/search-command";
 import { siteConfig } from "@/config/site";
 import { ProposalProvider } from "@/contexts/ProposalContext";
+import PlausibleProvider from "next-plausible";
 
 export const metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -25,6 +26,9 @@ export const metadata = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <PlausibleProvider domain="eip.directory" trackOutboundLinks />
+      </head>
       <body>
         <ThemeProvider
           attribute="class"
