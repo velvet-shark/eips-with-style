@@ -39,17 +39,22 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
     };
   }
 
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  const ogImageUrl = new URL("/api/og", baseUrl);
+  ogImageUrl.searchParams.append("proposal", `${proposal.proposal_type}-${proposal.number}`);
+  ogImageUrl.searchParams.append("title", proposal.title);
+
   return {
     title: `${proposal.proposal_type}-${proposal.number}: ${proposal.title} | EIP.directory`,
     description: proposal.description,
     openGraph: {
-      title: `${proposal.proposal_type}-${proposal.number}: ${proposal.title}`,
+      title: `${proposal.proposal_type}-${proposal.number}: ${proposal.title} | EIP.directory`,
       description: proposal.description,
       url: `https://eip.directory/${proposalType}/${slug}`,
       siteName: "EIP.directory",
       images: [
         {
-          url: "/path/to/your/og-image.jpg",
+          url: ogImageUrl.toString(),
           width: 1200,
           height: 630
         }
@@ -59,9 +64,10 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
     },
     twitter: {
       card: "summary_large_image",
-      title: `${proposal.proposal_type}-${proposal.number}: ${proposal.title}`,
+      title: `${proposal.proposal_type}-${proposal.number}: ${proposal.title} | EIP.directory`,
       description: proposal.description,
-      images: ["/path/to/your/twitter-image.jpg"]
+      creator: "@velvet_shark",
+      images: [ogImageUrl.toString()]
     }
   };
 }

@@ -50,7 +50,6 @@ export default function ProposalContent({ proposal }: { proposal: Proposal }) {
             ),
             code: (props) => {
               const { children, className } = props;
-              // className is of the form `language-{languageName}`
               const isMultiLine = children!.toString().includes("\n");
 
               if (!isMultiLine) {
