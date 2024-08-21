@@ -6,8 +6,16 @@ import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import { CodeBlock } from "@/components/code-block";
 import { Proposal } from "@/lib/types";
+import dynamic from "next/dynamic";
+import { useTheme } from "next-themes";
 
 export default function ProposalContent({ proposal }: { proposal: Proposal }) {
+  const DynamicFeedbackButton = dynamic(() => import("@/components/pushfeedback"), {
+    ssr: false
+  });
+
+  const { resolvedTheme } = useTheme();
+
   return (
     <div className="px-2">
       <div className="h-full text-sm">
@@ -68,6 +76,16 @@ export default function ProposalContent({ proposal }: { proposal: Proposal }) {
         >
           {proposal.content}
         </ReactMarkdown>
+        <DynamicFeedbackButton
+          project="s72ws8zp9t"
+          button-position={typeof window !== "undefined" && window.innerWidth <= 768 ? "bottom-right" : "center-right"}
+          modal-position="sidebar-right"
+          modal-title="Thoughts? Feedback? Want to suggest a link to add?"
+          button-style={useTheme().resolvedTheme === "dark" ? "dark" : "light"}
+          custom-font="true"
+        >
+          Feedback
+        </DynamicFeedbackButton>
       </div>
     </div>
   );

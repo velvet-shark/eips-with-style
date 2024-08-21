@@ -160,7 +160,7 @@ export const Navigation: React.FC<NavigationProps> = ({ proposals }) => {
               </div>
             </Link>
             {/* Search form */}
-            <SearchLink />
+            <SearchLink className="mx-2" />
           </div>
           <div ref={contentRef} className="flex-grow overflow-y-auto">
             {/* Container for the featured proposals */}
