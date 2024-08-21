@@ -46,7 +46,10 @@ export const ProposalList: React.FC<ProposalListProps> = ({ proposals }) => {
               )}
             </div>
             <span className="truncate">
-              {proposal.proposal_type}-{proposal.number} {proposal.title}
+              <span className="font-semibold">
+                {proposal.proposal_type}-{proposal.number}
+              </span>{" "}
+              {proposal.title}
             </span>
           </Link>
         </div>

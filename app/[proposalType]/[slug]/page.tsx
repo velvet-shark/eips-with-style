@@ -96,7 +96,9 @@ export default async function ProposalPage({ params }: Props) {
     redirect("/404");
   }
 
-  proposal.content = replaceImageUrls(proposal.content);
+  if (proposal) {
+    proposal.content = replaceImageUrls(proposal.content, proposal.proposal_type);
+  }
 
   return (
     <div className="flex h-full dark:bg-[#1f1f1f]">
