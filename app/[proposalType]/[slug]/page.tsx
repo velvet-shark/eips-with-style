@@ -1,5 +1,6 @@
 import { Metadata, ResolvingMetadata } from "next";
 import { createClient } from "@/utils/supabase/server";
+import { notFound, redirect } from "next/navigation";
 import ClientNavigation from "@/components/client-navigation";
 import Proposal from "@/components/proposal";
 import MetadataItem from "@/components/metadata-item";
@@ -9,7 +10,7 @@ import LinkItem from "@/components/link-item";
 import MetadataGeneralInfo from "@/components/metadata-general-info";
 import { Proposal as ProposalType } from "@/lib/types";
 import { replaceImageUrls } from "@/lib/utils";
-import { redirect } from "next/navigation";
+import { siteConfig } from "@/config/site";
 
 import {
   ChevronsLeftRightIcon as MetadataIcon,
@@ -35,39 +36,43 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
 
   if (!proposal) {
     return {
-      title: "Proposal Not Found"
+      title: "Not Found",
+      description: "The page you're looking for does not exist."
     };
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-  const ogImageUrl = new URL("/api/og", baseUrl);
-  ogImageUrl.searchParams.append("proposal", `${proposal.proposal_type}-${proposal.number}`);
-  ogImageUrl.searchParams.append("title", proposal.title);
+  const previousImages = (await parent).openGraph?.images || [];
 
   return {
-    title: `${proposal.proposal_type}-${proposal.number}: ${proposal.title} | EIP.directory`,
-    description: proposal.description,
+    title: `${proposal.proposal_type}-${proposal.number}: ${proposal.title}`,
+    description: proposal.description || `${proposal.proposal_type}-${proposal.number}: ${proposal.title}`,
     openGraph: {
-      title: `${proposal.proposal_type}-${proposal.number}: ${proposal.title} | EIP.directory`,
-      description: proposal.description,
-      url: `https://eip.directory/${proposalType}/${slug}`,
-      siteName: "EIP.directory",
+      title: `${proposal.proposal_type}-${proposal.number}: ${proposal.title}`,
+      description: proposal.description || `${proposal.proposal_type}-${proposal.number}: ${proposal.title}`,
+      url: `${siteConfig.url}/${proposalType}/${slug}`,
+      siteName: siteConfig.name,
       images: [
         {
-          url: ogImageUrl.toString(),
+          url: `${siteConfig.url}/api/og?title=${encodeURIComponent(proposal.title)}&type=${encodeURIComponent(
+            proposal.proposal_type
+          )}&number=${encodeURIComponent(proposal.number)}`,
           width: 1200,
           height: 630
-        }
+        },
+        ...previousImages
       ],
       locale: "en_US",
       type: "website"
     },
     twitter: {
       card: "summary_large_image",
-      title: `${proposal.proposal_type}-${proposal.number}: ${proposal.title} | EIP.directory`,
-      description: proposal.description,
-      creator: "@velvet_shark",
-      images: [ogImageUrl.toString()]
+      title: `${proposal.proposal_type}-${proposal.number}: ${proposal.title}`,
+      description: proposal.description || `${proposal.proposal_type}-${proposal.number}: ${proposal.title}`,
+      images: [
+        `${siteConfig.url}/api/og?title=${encodeURIComponent(proposal.title)}&type=${encodeURIComponent(
+          proposal.proposal_type
+        )}&number=${encodeURIComponent(proposal.number)}`
+      ]
     }
   };
 }
@@ -99,7 +104,7 @@ export default async function ProposalPage({ params }: Props) {
 
   // If still not found, redirect to 404
   if (!proposal) {
-    redirect("/404");
+    notFound();
   }
 
   if (proposal) {
