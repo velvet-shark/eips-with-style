@@ -43,6 +43,10 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
 
   const previousImages = (await parent).openGraph?.images || [];
 
+  const ogImageUrl = `${siteConfig.url}/api/og?title=${encodeURIComponent(proposal.title)}&type=${encodeURIComponent(
+    proposal.proposal_type
+  )}&number=${encodeURIComponent(proposal.number)}`;
+
   return {
     title: `${proposal.proposal_type}-${proposal.number}: ${proposal.title}`,
     description: proposal.description || `${proposal.proposal_type}-${proposal.number}: ${proposal.title}`,
@@ -53,9 +57,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
       siteName: siteConfig.name,
       images: [
         {
-          url: `${siteConfig.url}/api/og?title=${encodeURIComponent(proposal.title)}&type=${encodeURIComponent(
-            proposal.proposal_type
-          )}&number=${encodeURIComponent(proposal.number)}`,
+          url: ogImageUrl,
           width: 1200,
           height: 630
         },
@@ -68,11 +70,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
       card: "summary_large_image",
       title: `${proposal.proposal_type}-${proposal.number}: ${proposal.title}`,
       description: proposal.description || `${proposal.proposal_type}-${proposal.number}: ${proposal.title}`,
-      images: [
-        `${siteConfig.url}/api/og?title=${encodeURIComponent(proposal.title)}&type=${encodeURIComponent(
-          proposal.proposal_type
-        )}&number=${encodeURIComponent(proposal.number)}`
-      ]
+      images: [ogImageUrl]
     }
   };
 }
