@@ -100,6 +100,12 @@ export default async function ProposalPage({ params }: Props) {
     }
   }
 
+  // Check if the slug ends with ".md" and remove it
+  if (slug.endsWith(".md")) {
+    const updatedSlug = slug.slice(0, -3); // Remove the last 3 characters ('.md')
+    redirect(`/${proposalType}/${updatedSlug}`);
+  }
+
   // If still not found, redirect to 404
   if (!proposal) {
     notFound();
