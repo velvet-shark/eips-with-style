@@ -9,7 +9,7 @@ import { TwitterLogoIcon, GitHubLogoIcon } from "@radix-ui/react-icons";
 import { Button } from "@/components/ui/button";
 import { usePathname, useParams } from "next/navigation";
 import Link from "next/link";
-import { ElementRef, useRef, useEffect, useState } from "react";
+import { ElementRef, useRef, useEffect, useState, useCallback } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import { useProposals } from "@/contexts/ProposalContext";
 
@@ -99,9 +99,9 @@ export const Navigation: React.FC<NavigationProps> = ({ proposals }) => {
       setIsCollapsed(false);
       setIsResetting(true);
 
-      sidebarRef.current.style.width = isMobile ? "100%" : "240px";
-      navbarRef.current.style.setProperty("width", isMobile ? "0" : "calc(100% - 240px)");
-      navbarRef.current.style.setProperty("left", isMobile ? "100%" : "240px");
+      sidebarRef.current.style.width = isMobile ? "100%" : "280px";
+      navbarRef.current.style.setProperty("width", isMobile ? "0" : "calc(100% - 280px)");
+      navbarRef.current.style.setProperty("left", isMobile ? "100%" : "280px");
       setTimeout(() => {
         setIsResetting(false);
       }, 300);
@@ -120,12 +120,19 @@ export const Navigation: React.FC<NavigationProps> = ({ proposals }) => {
     }
   };
 
+  const handleClick = useCallback((action: () => void) => {
+    return (event: React.MouseEvent | React.TouchEvent) => {
+      event.preventDefault();
+      action();
+    };
+  }, []);
+
   return (
     <>
       <aside
         ref={sidebarRef}
         className={cn(
-          "group/sidebar h-full bg-secondary overflow-y-auto relative flex w-60 flex-col z-[99999]",
+          "group/sidebar h-full bg-secondary overflow-y-auto relative flex w-70 flex-col z-[99999]",
           isResetting && "transition-all ease-in-out duration-300",
           isMobile && "w-0"
         )}
@@ -139,7 +146,8 @@ export const Navigation: React.FC<NavigationProps> = ({ proposals }) => {
           >
             {/* Collapse button */}
             <div
-              onClick={collapse}
+              onClick={handleClick(collapse)}
+              onTouchStart={handleClick(collapse)}
               role="button"
               className={cn(
                 `w-6 h-6 text-muted-foreground rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600 absolute top-3 right-2 opacity-0 group-hover/sidebar:opacity-100 transition`,
@@ -194,14 +202,15 @@ export const Navigation: React.FC<NavigationProps> = ({ proposals }) => {
         {/* Add resize handle */}
         <div
           onMouseDown={handleMouseDown}
-          onClick={(e) => e.stopPropagation()}
+          onClick={handleClick(resetWidth)}
+          onTouchStart={handleClick(resetWidth)}
           className="opacity-0 group-hover/sidebar:opacity-100 transition cursor-ew-resize absolute h-full w-1 bg-primary/10 right-0 top-0"
         />
       </aside>
 
       <div
         className={cn(
-          `absolute top-0 z-[99999] left-60 w-[calc(100%-240px)]`,
+          `absolute top-0 z-[99999] left-70 w-[calc(100%-280px)]`,
           isResetting && "transition-all ease-in-out duration-300",
           isMobile && "left-0 w-full"
         )}
@@ -211,12 +220,14 @@ export const Navigation: React.FC<NavigationProps> = ({ proposals }) => {
           {isCollapsed && (
             <div className="relative group">
               <MenuIcon
-                onClick={resetWidth}
+                onClick={handleClick(resetWidth)}
+                onTouchStart={handleClick(resetWidth)}
                 role="button"
                 className="h-6 w-6 text-muted-foreground group-hover:opacity-0 transition-opacity"
               />
               <ChevronsRight
-                onClick={resetWidth}
+                onClick={handleClick(resetWidth)}
+                onTouchStart={handleClick(resetWidth)}
                 role="button"
                 className="h-6 w-6 text-muted-foreground absolute top-0 left-0 opacity-0 group-hover:opacity-100 transition-opacity"
               />
