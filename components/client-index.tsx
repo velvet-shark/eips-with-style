@@ -25,7 +25,7 @@ export default function ClientIndex() {
             </div>
 
             <div className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl text-left space-y-6">
-              <p className="font-semibold">Welcome to theEthereum Improvement Proposal (EIP) Directory.</p>
+              <p className="font-semibold">Welcome to the Ethereum Improvement Proposal (EIP) Directory.</p>
 
               <div>
                 <p className="mb-2">You can find all Ethereum proposals here:</p>
