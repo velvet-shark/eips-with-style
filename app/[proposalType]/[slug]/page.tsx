@@ -11,6 +11,8 @@ import MetadataGeneralInfo from "@/components/metadata-general-info";
 import { Proposal as ProposalType } from "@/lib/types";
 import { replaceImageUrls } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
+import { Suspense } from "react";
+import Loading from "@/app/loading";
 
 import {
   ChevronsLeftRightIcon as MetadataIcon,
@@ -76,6 +78,14 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
 }
 
 export default async function ProposalPage({ params }: Props) {
+  return (
+    <Suspense fallback={<Loading />}>
+      <ProposalContent params={params} />
+    </Suspense>
+  );
+}
+
+async function ProposalContent({ params }: Props) {
   const { proposalType, slug } = params;
   const supabase = createClient();
 
