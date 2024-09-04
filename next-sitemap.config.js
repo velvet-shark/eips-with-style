@@ -1,6 +1,6 @@
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-  siteUrl: process.env.SITE_URL || "https://eip.directory",
+  siteUrl: "https://eip.directory",
   generateRobotsTxt: true,
   exclude: ["/protected", "/login"],
   generateIndexSitemap: false,

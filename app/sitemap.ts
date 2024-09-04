@@ -7,7 +7,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Fetch all proposals
   const { data: proposals } = await supabase.from("proposals").select("proposal_type, slug, updated_at");
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://eip.directory";
+  const baseUrl = "https://eip.directory";
 
   const proposalUrls =
     proposals?.map((proposal) => ({
