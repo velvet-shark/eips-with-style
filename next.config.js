@@ -5,6 +5,10 @@ const nextConfig = {
       {
         source: "/:proposalType/:slug",
         destination: "/:proposalType/:slug"
+      },
+      {
+        source: "/sitemap.xml",
+        destination: "/api/sitemap"
       }
     ];
   }
