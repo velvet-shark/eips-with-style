@@ -19,7 +19,7 @@ export default function NotFound() {
               <Logo width={40} height={40} className="w-5 h-5 md:w-[40px] md:h-[40px] mr-1" />
               <h1 className="ml-1 text-[1.25rem] lg:text-[2rem] font-bold">EIP Directory</h1>
             </div>
-            <h2 className="text-4xl font-bold mb-4 flex items-center justify-center text-red-500 dark:text-red-400">
+            <h2 className="text-4xl font-bold mb-12 flex items-center justify-center text-red-500 dark:text-red-400">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-10 w-10 mr-2"
@@ -36,7 +36,6 @@ export default function NotFound() {
               </svg>
               Page Not Found
             </h2>
-            <p className="text-xl mb-8">🤔 Hmmm, couldn't find what you were looking for 🤷‍♂️</p>
             {/* Search form */}
             <div className="mb-8 max-w-xl mx-auto">
               <p className="text-lg mb-2">Maybe try searching for it?</p>
