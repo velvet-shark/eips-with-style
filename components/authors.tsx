@@ -9,13 +9,13 @@ const Authors: React.FC<AuthorLinksProps> = ({ authors }) => {
   const renderAuthors = () => {
     if (!authors) return null;
 
-    // Split the string by commas, but not within parentheses
-    const authorParts = authors.split(/,\s*(?![^(]*\))/);
+    // Split the string by commas, but not within parentheses or angle brackets
+    const authorParts = authors.split(/,\s*(?![^(<]*[)>])/);
     return authorParts.map((part, index) => {
-      // Use regex to match the name and username, accounting for dashes and underscores
-      const match = part.match(/^(.+?)\s*\((@[\w-]+)\)\s*$/);
-      if (match) {
-        const [, name, username] = match;
+      // Match GitHub username
+      const githubMatch = part.match(/^(.+?)\s*\((@[\w-]+)\)\s*$/);
+      if (githubMatch) {
+        const [, name, username] = githubMatch;
         return (
           <React.Fragment key={index}>
             {name.trim().replace(/\s+/g, " ")}{" "}
@@ -34,6 +34,25 @@ const Authors: React.FC<AuthorLinksProps> = ({ authors }) => {
           </React.Fragment>
         );
       }
+      // Match email
+      const emailMatch = part.match(/^(.+?)\s*<(.+@.+)>\s*$/);
+      if (emailMatch) {
+        const [, name, email] = emailMatch;
+        return (
+          <React.Fragment key={index}>
+            {name.trim().replace(/\s+/g, " ")}{" "}
+            <span>
+              (
+              <Link href={`mailto:${email}`} className="text-blue-500 hover:underline">
+                {email}
+              </Link>
+              )
+            </span>
+            {index < authorParts.length - 1 && ", "}
+          </React.Fragment>
+        );
+      }
+
       // If no match, just return the trimmed part
       return (
         <React.Fragment key={index}>
