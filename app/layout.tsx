@@ -28,7 +28,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en" suppressHydrationWarning>
       <head>
         <PlausibleProvider
-          domain="eipdirectory.com"
+          domain="eip.directory"
           selfHosted
           trackOutboundLinks
           customDomain="https://pls.velvetshark.com"
