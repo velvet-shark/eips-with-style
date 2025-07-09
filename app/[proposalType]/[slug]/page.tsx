@@ -13,6 +13,7 @@ import { replaceImageUrls } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
 import { Suspense } from "react";
 import Loading from "@/app/loading";
+import ViewTracker from "@/components/view-tracker";
 
 import {
   ChevronsLeftRightIcon as MetadataIcon,
@@ -127,6 +128,7 @@ async function ProposalContent({ params }: Props) {
 
   return (
     <div className="flex h-full dark:bg-[#1f1f1f]">
+      <ViewTracker proposalId={proposal.id} />
       <ClientNavigation />
       <main className="flex-1 h-full overflow-y-auto">
         <div className="flex-1 px-6 pb-10 items-center justify-center md:justify-start gap-y-8">

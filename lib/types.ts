@@ -1,15 +1,16 @@
 interface ProposalShort {
-  id: number;
+  id: string;
   proposal_type: string;
   number: number;
   slug: string;
   title: string;
   created_at: string;
   featured: boolean;
+  view_count?: number;
 }
 
 interface Proposal {
-  id: number;
+  id: string;
   proposal_type: string;
   number: number;
   slug: string;
