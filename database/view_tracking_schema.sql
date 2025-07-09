@@ -3,7 +3,6 @@ CREATE TABLE view_logs (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   proposal_id uuid REFERENCES proposals(id) ON DELETE CASCADE,
   viewed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  user_ip TEXT,
   user_agent TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
