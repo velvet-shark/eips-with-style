@@ -21,6 +21,7 @@ export interface NavigationProps {
 
 export const Navigation: React.FC<NavigationProps> = ({ proposals }) => {
   const { featuredProposals, popularProposals } = useProposals();
+
   const pathname = usePathname();
   const isMobile = useMediaQuery("(max-width: 768px)");
   const params = useParams();
@@ -176,7 +177,7 @@ export const Navigation: React.FC<NavigationProps> = ({ proposals }) => {
               <div className="group min-h-[27px] text-xs py-2 px-3 w-full hover:bg-primary/5 flex items-center text-muted-foreground/70 font-sm font-semibold">
                 Popular Proposals
               </div>
-              <ProposalList proposals={popularProposals.map((p) => ({ ...p, featured: false }))} />
+              <ProposalList key={`popular-${popularProposals.length}`} proposals={popularProposals} />
             </div>
           </div>
           {/* Sticky footer */}

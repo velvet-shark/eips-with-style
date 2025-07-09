@@ -62,4 +62,4 @@ BEGIN
   ORDER BY view_count DESC, p.created_at DESC
   LIMIT limit_count;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER;

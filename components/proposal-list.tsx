@@ -17,7 +17,7 @@ interface ProposalListProps {
 
 export const ProposalList: React.FC<ProposalListProps> = ({ proposals }) => {
   if (!proposals || proposals.length === 0) {
-    return <p className="text-sm text-muted-foreground p-3">No featured proposals at the moment.</p>;
+    return <p className="text-sm text-muted-foreground p-3">No proposals to display at the moment.</p>;
   }
 
   return (

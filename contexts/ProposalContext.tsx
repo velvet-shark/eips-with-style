@@ -27,50 +27,39 @@ export const ProposalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [popularProposals, setPopularProposals] = useState<ProposalShort[]>([]);
 
   useEffect(() => {
-    const fetchProposals = async () => {
-      const supabase = createClient();
-      const { data, error } = await supabase
-        .from("proposals")
-        .select("id, proposal_type, number, slug, title, featured, created_at")
-        .order("created_at", { ascending: false });
+    const fetchAndSetProposals = async () => {
+      // First, try to load all proposals from cache
+      const cachedAllProposals = localStorage.getItem("allProposals");
+      if (cachedAllProposals) {
+        const allData = JSON.parse(cachedAllProposals);
+        setAllProposals(allData);
+        setFeaturedProposals(allData.filter((p: ProposalShort) => p.featured));
+      } else {
+        // If not in cache, fetch from Supabase
+        const supabase = createClient();
+        const { data, error } = await supabase
+          .from("proposals")
+          .select("id, proposal_type, number, slug, title, featured, created_at")
+          .order("created_at", { ascending: false });
 
-      if (data && !error) {
-        setAllProposals(data);
-        const featured = data.filter((proposal) => proposal.featured);
-        setFeaturedProposals(featured);
-
-        // Optionally, you can still use localStorage for caching if needed
-        localStorage.setItem("allProposals", JSON.stringify(data));
-        localStorage.setItem("featuredProposals", JSON.stringify(featured));
+        if (data && !error) {
+          setAllProposals(data);
+          setFeaturedProposals(data.filter((p) => p.featured));
+          localStorage.setItem("allProposals", JSON.stringify(data));
+        }
       }
+
+      // Always fetch a fresh list of popular proposals
+      const popularData = await getPopularProposals(30, 20);
+      setPopularProposals(popularData);
     };
 
-    const fetchPopularProposals = async () => {
-      console.log('Fetching popular proposals...');
-      const popular = await getPopularProposals(30, 20);
-      console.log('Popular proposals received:', popular);
-      setPopularProposals(popular);
-      localStorage.setItem("popularProposals", JSON.stringify(popular));
-    };
-
-    const cachedAllProposals = localStorage.getItem("allProposals");
-    const cachedFeaturedProposals = localStorage.getItem("featuredProposals");
-    const cachedPopularProposals = localStorage.getItem("popularProposals");
-
-    if (cachedAllProposals && cachedFeaturedProposals) {
-      setAllProposals(JSON.parse(cachedAllProposals));
-      setFeaturedProposals(JSON.parse(cachedFeaturedProposals));
-    }
-
-    if (cachedPopularProposals) {
-      const cached = JSON.parse(cachedPopularProposals);
-      console.log('Loading cached popular proposals:', cached);
-      setPopularProposals(cached);
-    }
-
-    fetchProposals();
-    fetchPopularProposals();
+    fetchAndSetProposals();
   }, []);
 
-  return <ProposalContext.Provider value={{ featuredProposals, allProposals, popularProposals }}>{children}</ProposalContext.Provider>;
+  return (
+    <ProposalContext.Provider value={{ featuredProposals, allProposals, popularProposals }}>
+      {children}
+    </ProposalContext.Provider>
+  );
 };
