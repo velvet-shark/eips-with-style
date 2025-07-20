@@ -52,9 +52,9 @@ export default function ClientIndex() {
               </p>
 
               <p>
-                For proposals that are important, noteworthy, or interesting (you can find these in the sidebar),
-                there's a <span className="font-semibold text-green-600 dark:text-green-400">Why is it important?</span>{" "}
-                section that explains why the proposal matters and why it is included in this list.
+                For some proposals that are important, noteworthy, or interesting there's a{" "}
+                <span className="font-semibold text-green-600 dark:text-green-400">Why is it important?</span> section
+                which explains, in simple terms, why the proposal matters.
               </p>
 
               <p>
