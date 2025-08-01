@@ -104,7 +104,7 @@ export function SearchCommand() {
     (proposal: ProposalShort) => (
       <CommandItem
         key={proposal.id}
-        value={`${proposal.proposal_type}-${proposal.number} ${proposal.title}`}
+        value={`${proposal.proposal_type}-${proposal.number} ${proposal.title} ${proposal.slug}`}
         onSelect={() => onSelect(proposal.proposal_type, proposal.slug)}
       >
         {proposal.proposal_type === "EIP" && <EIPIcon className="w-4 h-4 mr-2 text-muted-foreground" />}
@@ -120,7 +120,7 @@ export function SearchCommand() {
   );
 
   return (
-    <CommandDialog open={isOpen} onOpenChange={onClose}>
+    <CommandDialog open={isOpen} onOpenChange={onClose} shouldFilter={false}>
       <CommandInput placeholder="Search EIP, ERC, CAIP, or RIP" onValueChange={handleSearch} />
       <CommandList ref={commandListRef}>
         <CommandEmpty>No results found.</CommandEmpty>
