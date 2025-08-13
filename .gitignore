@@ -7,7 +7,9 @@
 .yarn/install-state.gz
 
 # backend
-/backend
+/backend/.env
+/backend/venv/
+/backend/downloaded_proposals*/
 
 # testing
 /coverage

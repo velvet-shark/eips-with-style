@@ -24,6 +24,9 @@ jobs:
         pip install -r requirements.txt
         
     - name: Run proposal updater
+      env:
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
       run: |
         cd backend
         python3 proposal_updater.py --download
