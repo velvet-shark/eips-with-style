@@ -75,19 +75,55 @@ export function SearchCommand() {
 
   const searchResults = useMemo(() => {
     if (!isSearching) return [];
-    return allProposals.filter((proposal) => {
+    const normalizedTerm = searchTerm.replace(/\s+/g, "").replace(/-/g, "");
+
+    const scoreProposal = (proposal: ProposalShort) => {
       const number = proposal.number.toString();
       const slug = proposal.slug.toLowerCase();
       const title = proposal.title.toLowerCase();
       const type = proposal.proposal_type.toLowerCase();
 
-      return (
+      // Precomputed strings for quick comparisons
+      const typeNumberDash = `${type}-${number}`;
+      const typeNumber = `${type}${number}`;
+      const slugNoDash = slug.replace(/-/g, "");
+
+      let score = 0;
+
+      // Exact intent matches get the highest weight
+      if (slug === searchTerm) score += 120;
+      if (slugNoDash === normalizedTerm) score += 110;
+      if (typeNumberDash === searchTerm) score += 115;
+      if (typeNumber === normalizedTerm) score += 105;
+      if (number === searchTerm) score += 90;
+
+      // Prefix matches feel more intentional than generic substring hits
+      if (slug.startsWith(searchTerm) || title.startsWith(searchTerm) || typeNumberDash.startsWith(searchTerm)) {
+        score += 60;
+      }
+
+      // General substring matches keep broader discoverability
+      if (
         number.includes(searchTerm) ||
         slug.includes(searchTerm) ||
         title.includes(searchTerm) ||
         type.includes(searchTerm)
-      );
-    });
+      ) {
+        score += 30;
+      }
+
+      return score;
+    };
+
+    return allProposals
+      .map((proposal) => ({ proposal, score: scoreProposal(proposal) }))
+      .filter(({ score }) => score > 0)
+      .sort(
+        (a, b) =>
+          b.score - a.score ||
+          new Date(b.proposal.created_at).getTime() - new Date(a.proposal.created_at).getTime()
+      )
+      .map(({ proposal }) => proposal);
   }, [allProposals, searchTerm, isSearching]);
 
   const onSelect = useCallback(
