@@ -64,7 +64,7 @@ export default function ClientIndex() {
 
             <footer className="mt-[7rem] text-sm text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-4">
               <div className="flex flex-col items-start justify-center gap-2 mt-2">
-                <div className="flex items-start mb-2">
+                <div className="flex items-start">
                   <svg
                     viewBox="0 0 98 96"
                     xmlns="http://www.w3.org/2000/svg"
@@ -90,11 +90,32 @@ export default function ClientIndex() {
                   </span>
                 </div>
                 <div className="flex items-start">
+                  <svg
+                    className="w-4 h-4 mr-2 flex-shrink-0 mt-[4px]"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <rect x="3" y="4" width="18" height="14" rx="2" ry="2" />
+                    <path d="m7 9 3 3-3 3" />
+                    <path d="M13 15h4" />
+                  </svg>
+                  <span className="text-left">
+                    <a href="https://quickcast.dev" className="text-blue-500 hover:underline" target="_blank">
+                      quickcast.dev
+                    </a>{" "}
+                    - Foundry <code>cast</code> commands explorer
+                  </span>
+                </div>
+                <div className="flex items-start">
                   <svg className="w-4 h-4 mr-2 flex-shrink-0 mt-[4px]" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
                   </svg>
                   <span className="text-left">
-                    Follow me on Twitter{" "}
+                    Follow me on Twitter:{" "}
                     <a
                       href="https://twitter.com/velvet_shark"
                       className="text-blue-500 hover:underline"
@@ -102,7 +123,6 @@ export default function ClientIndex() {
                     >
                       @velvet_shark
                     </a>{" "}
-                    for more web3 and blockchain content!
                   </span>
                 </div>
               </div>
