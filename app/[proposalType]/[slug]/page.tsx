@@ -23,12 +23,12 @@ import {
 } from "lucide-react";
 
 type Props = {
-  params: { proposalType: string; slug: string };
+  params: Promise<{ proposalType: string; slug: string }>;
 };
 
 export async function generateMetadata({ params }: Props, parent: ResolvingMetadata): Promise<Metadata> {
-  const { proposalType, slug } = params;
-  const supabase = createClient();
+  const { proposalType, slug } = await params;
+  const supabase = await createClient();
 
   const { data: proposal } = await supabase
     .from("proposals")
@@ -79,16 +79,17 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
 }
 
 export default async function ProposalPage({ params }: Props) {
+  const resolvedParams = await params;
   return (
     <Suspense fallback={<Loading />}>
-      <ProposalContent params={params} />
+      <ProposalContent params={resolvedParams} />
     </Suspense>
   );
 }
 
-async function ProposalContent({ params }: Props) {
+async function ProposalContent({ params }: { params: { proposalType: string; slug: string } }) {
   const { proposalType, slug } = params;
-  const supabase = createClient();
+  const supabase = await createClient();
 
   async function checkProposal(type: string, proposalSlug: string) {
     const { data } = await supabase
