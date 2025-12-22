@@ -29,8 +29,28 @@ RIP_REPO = f"{GITHUB_API_BASE}/ethereum/RIPs/contents/RIPS"
 LOCAL_STORAGE = "downloaded_proposals"
 
 def get_files_from_github(repo_url):
-    response = requests.get(repo_url)
-    return [file for file in response.json() if file['name'].endswith('.md')]
+    headers = {}
+    github_token = os.getenv("GITHUB_TOKEN")
+    if github_token:
+        headers["Authorization"] = f"token {github_token}"
+
+    response = requests.get(repo_url, headers=headers)
+
+    if response.status_code != 200:
+        error_msg = f"GitHub API error: {response.status_code}"
+        try:
+            error_data = response.json()
+            if isinstance(error_data, dict):
+                error_msg += f" - {error_data.get('message', 'Unknown error')}"
+        except:
+            pass
+        raise Exception(error_msg)
+
+    data = response.json()
+    if not isinstance(data, list):
+        raise Exception(f"Unexpected GitHub API response: expected list, got {type(data).__name__}")
+
+    return [file for file in data if file['name'].endswith('.md')]
 
 def download_file_content(file_url):
     response = requests.get(file_url)
