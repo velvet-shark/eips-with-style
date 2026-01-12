@@ -23,8 +23,15 @@ export const useProposals = () => {
 
 const ALL_PROPOSALS_CACHE_KEY = "allProposalsCacheV2"; // bump to invalidate stale client cache
 const CACHE_TTL_MS = 1000 * 60 * 60 * 12; // 12 hours
+const POPULAR_PROPOSALS_CACHE_KEY = "popularProposalsCacheV1";
+const POPULAR_CACHE_TTL_MS = 1000 * 60 * 15; // 15 minutes
 
 type AllProposalsCache = {
+  timestamp: number; // Date.now()
+  data: ProposalShort[];
+};
+
+type PopularProposalsCache = {
   timestamp: number; // Date.now()
   data: ProposalShort[];
 };
@@ -104,15 +111,50 @@ export const ProposalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           localStorage.setItem(ALL_PROPOSALS_CACHE_KEY, JSON.stringify(payload));
         }
 
-        // Always fetch a fresh list of popular proposals
-        const popularData = await getPopularProposals(30, 20);
-        setPopularProposals(popularData);
       } catch (e) {
         console.error("Failed to load proposals:", e);
       }
     };
 
     loadProposals();
+  }, []);
+
+  useEffect(() => {
+    const loadPopularProposals = async () => {
+      try {
+        const cachedRaw = localStorage.getItem(POPULAR_PROPOSALS_CACHE_KEY);
+        const now = Date.now();
+        let shouldFetch = true;
+
+        if (cachedRaw) {
+          try {
+            const parsed: PopularProposalsCache = JSON.parse(cachedRaw);
+            if (parsed && Array.isArray(parsed.data) && typeof parsed.timestamp === "number") {
+              setPopularProposals(parsed.data);
+              const fresh = now - parsed.timestamp < POPULAR_CACHE_TTL_MS;
+              if (fresh) {
+                shouldFetch = false;
+              }
+            }
+          } catch (e) {
+            console.warn("Ignoring malformed cache for popular proposals:", e);
+          }
+        }
+
+        if (!shouldFetch) return;
+
+        const popularData = await getPopularProposals(30, 20);
+        if (popularData && popularData.length > 0) {
+          setPopularProposals(popularData);
+          const payload: PopularProposalsCache = { timestamp: now, data: popularData };
+          localStorage.setItem(POPULAR_PROPOSALS_CACHE_KEY, JSON.stringify(payload));
+        }
+      } catch (e) {
+        console.error("Failed to load popular proposals:", e);
+      }
+    };
+
+    loadPopularProposals();
   }, []);
 
   return (

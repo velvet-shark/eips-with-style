@@ -22,20 +22,19 @@ export async function trackProposalView(proposalId: string) {
 }
 
 export async function getPopularProposals(daysBack: number = 30, limit: number = 20) {
-  const supabase = createClient();
-
   try {
-    const { data, error } = await supabase.rpc("get_popular_proposals", {
-      days_back: daysBack,
-      limit_count: limit
+    const params = new URLSearchParams({
+      days: String(daysBack),
+      limit: String(limit)
     });
-
-    if (error) {
-      console.error("Error fetching popular proposals:", error);
+    const response = await fetch(`/api/popular?${params.toString()}`);
+    if (!response.ok) {
+      console.error("Error fetching popular proposals:", response.status);
       return [];
     }
 
-    return data || [];
+    const payload = (await response.json()) as { data?: any[] };
+    return payload.data || [];
   } catch (error) {
     console.error("Error fetching popular proposals:", error);
     return [];
