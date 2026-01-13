@@ -1,5 +1,4 @@
 import { Metadata, ResolvingMetadata } from "next";
-import { createClient } from "@/utils/supabase/server";
 import { notFound, redirect } from "next/navigation";
 import ClientNavigation from "@/components/client-navigation";
 import Proposal from "@/components/proposal";
@@ -8,12 +7,13 @@ import Authors from "@/components/authors";
 import RequiresLinks from "@/components/requires-links";
 import LinkItem from "@/components/link-item";
 import MetadataGeneralInfo from "@/components/metadata-general-info";
-import { Proposal as ProposalType } from "@/lib/types";
 import { replaceImageUrls } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
 import { Suspense } from "react";
 import Loading from "@/app/loading";
 import ViewTracker from "@/components/view-tracker";
+import { fetchQuery } from "convex/nextjs";
+import { api } from "@/convex/_generated/api";
 
 import {
   ChevronsLeftRightIcon as MetadataIcon,
@@ -26,16 +26,18 @@ type Props = {
   params: Promise<{ proposalType: string; slug: string }>;
 };
 
+const normalizeProposalType = (value: string) => {
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+  return trimmed.toLowerCase().endsWith("s") ? trimmed.slice(0, -1).toUpperCase() : trimmed.toUpperCase();
+};
+
 export async function generateMetadata({ params }: Props, parent: ResolvingMetadata): Promise<Metadata> {
   const { proposalType, slug } = await params;
-  const supabase = await createClient();
-
-  const { data: proposal } = await supabase
-    .from("proposals")
-    .select("*")
-    .eq("slug", slug)
-    .eq("proposal_type", proposalType.toUpperCase().slice(0, -1))
-    .single();
+  const proposal = await fetchQuery(api.proposals.getProposalBySlugType, {
+    slug,
+    proposal_type: normalizeProposalType(proposalType)
+  });
 
   if (!proposal) {
     return {
@@ -89,16 +91,12 @@ export default async function ProposalPage({ params }: Props) {
 
 async function ProposalContent({ params }: { params: { proposalType: string; slug: string } }) {
   const { proposalType, slug } = params;
-  const supabase = await createClient();
 
   async function checkProposal(type: string, proposalSlug: string) {
-    const { data } = await supabase
-      .from("proposals")
-      .select("*")
-      .eq("slug", proposalSlug)
-      .eq("proposal_type", type.toUpperCase().slice(0, -1))
-      .single();
-    return data;
+    return fetchQuery(api.proposals.getProposalBySlugType, {
+      slug: proposalSlug,
+      proposal_type: normalizeProposalType(type)
+    });
   }
 
   let proposal = await checkProposal(proposalType, slug);
@@ -126,6 +124,8 @@ async function ProposalContent({ params }: { params: { proposalType: string; slu
   if (proposal) {
     proposal.content = replaceImageUrls(proposal.content, proposal.proposal_type);
   }
+
+  const requiresList = proposal?.requires ?? [];
 
   return (
     <div className="flex h-full dark:bg-[#1f1f1f]">
@@ -176,15 +176,9 @@ async function ProposalContent({ params }: { params: { proposalType: string; slu
                 <MetadataItem icon={AuthorsIcon} label="Authors" proposal={proposal}>
                   <Authors authors={proposal.authors} />
                 </MetadataItem>
-                {proposal.requires && (
+                {requiresList.length > 0 && (
                   <MetadataItem icon={RequiresIcon} label="Requires" proposal={proposal}>
-                    <RequiresLinks
-                      requires={
-                        Array.isArray(proposal.requires)
-                          ? proposal.requires
-                          : proposal.requires.split(",").map((num: string) => num.trim())
-                      }
-                    />
+                    <RequiresLinks requires={requiresList} />
                   </MetadataItem>
                 )}
                 <MetadataItem icon={LinkIcon} label="Links" proposal={proposal}>

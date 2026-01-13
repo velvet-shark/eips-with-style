@@ -10,6 +10,8 @@
 /backend/.env
 /backend/venv/
 /backend/downloaded_proposals*/
+/backend/ingestion_reports/
+/backend/convex_exports/
 
 # testing
 /coverage
@@ -43,3 +45,6 @@ next-env.d.ts
 
 # database
 /database
+
+# docs
+/docs

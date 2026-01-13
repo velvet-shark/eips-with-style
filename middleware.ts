@@ -1,9 +1,6 @@
-import { type NextRequest } from "next/server";
-import { updateSession } from "@/utils/supabase/middleware";
+import { convexAuthNextjsMiddleware } from "@convex-dev/auth/nextjs/server";
 
-export async function middleware(request: NextRequest) {
-  return await updateSession(request);
-}
+export default convexAuthNextjsMiddleware();
 
 export const config = {
   matcher: [

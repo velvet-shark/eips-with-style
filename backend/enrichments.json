@@ -1,286 +1,20 @@
 {
   "enrichments": [
     {
-      "proposal_type": "ERC",
-      "number": 4337,
-      "title_descriptive": "ERC-4337 enables smart contract wallets to replace traditional Ethereum accounts. Users send \"UserOperations\" to a special mempool, where bundlers package them into transactions. This allows wallets to have custom signature schemes, pay gas fees with tokens, enable social recovery, and batch multiple actions into one transaction.",
-      "why_important": "This is the foundation of Account Abstraction on Ethereum. It removes the requirement for users to hold ETH for gas, enables gasless onboarding sponsored by apps, and allows wallets with features like multisig and recovery - all without requiring changes to Ethereum's core protocol."
+      "proposal_type": "CAIP",
+      "number": 25,
+      "why_important": "CAIP-25 proposes a standardized way to describe and interact with blockchain assets across different blockchain networks. It mainly focuses on token identifiers, which are used to uniquely identify tokens (like cryptocurrencies and digital assets) across multiple blockchains."
     },
     {
-      "proposal_type": "EIP",
-      "number": 6690,
-      "title_descriptive": "EIP-6690 adds new EVM opcodes for modular arithmetic on large numbers up to 768 bits wide. It introduces virtual registers for efficient computation and optimized operations for cryptographic calculations using Montgomery multiplication.",
-      "why_important": "Many cryptographic operations are bottlenecked by modular arithmetic. This proposal would enable efficient implementation of various cryptographic primitives directly as EVM contracts, expanding what's possible for on-chain cryptography and zero-knowledge proofs."
+      "proposal_type": "CAIP",
+      "number": 222,
+      "why_important": "Similar to Sign in with Ethereum (SIWE), this is a chain-agnostic proposal for connecting to and signing in with one interaction."
     },
     {
-      "proposal_type": "ERC",
-      "number": 7562,
-      "title_descriptive": "ERC-7562 defines the validation rules that Account Abstraction bundlers must enforce when processing UserOperations. It specifies which opcodes are allowed, how storage access is limited, and how to prevent denial-of-service attacks through a reputation system for paymasters and factories.",
-      "why_important": "Without these rules, malicious actors could flood the mempool with UserOperations that seem valid but fail on-chain, wasting bundlers' resources. This standard ensures the ERC-4337 ecosystem remains secure and DoS-resistant while allowing legitimate flexibility."
-    },
-    {
-      "proposal_type": "ERC",
-      "number": 3525,
-      "title_descriptive": "ERC-3525 creates a hybrid token standard combining fungible and non-fungible properties. Each token has a unique ID (like NFTs), belongs to a \"slot\" category, and holds a quantitative value. Tokens in the same slot can transfer value between each other while keeping their individual identities.",
-      "why_important": "This standard bridges a critical gap for financial instruments on-chain. It enables fractional ownership, bonds, vesting schedules, and insurance policies - assets that need both unique identity and divisible value - without requiring complex workarounds using ERC-20 or ERC-721."
-    },
-    {
-      "proposal_type": "ERC",
-      "number": 2612,
-      "title_descriptive": "ERC-2612 adds a \"permit\" function to ERC-20 tokens that allows users to approve token spending through a signed message instead of an on-chain transaction. The signature follows EIP-712 standards and can be submitted by anyone.",
-      "why_important": "This eliminates the need for two separate transactions (approve + transfer) when interacting with tokens. Users can now authorize and execute in one step, and don't need to hold ETH for the approval transaction - enabling gasless token interactions and better UX."
-    },
-    {
-      "proposal_type": "ERC",
-      "number": 7201,
-      "title_descriptive": "ERC-7201 standardizes how upgradeable and modular contracts organize their storage using namespaces. It defines a formula to derive collision-free storage locations from identifiers, allowing different contract modules to maintain independent storage spaces.",
-      "why_important": "Upgradeable contracts and diamond patterns need to coordinate storage across multiple code modules. This standard prevents storage collisions, makes contracts safer to upgrade, and enables tooling like block explorers to properly interpret contract state."
-    },
-    {
-      "proposal_type": "EIP",
-      "number": 1153,
-      "title_descriptive": "EIP-1153 adds two new EVM opcodes (TLOAD and TSTORE) for transient storage - data that persists only for the duration of a single transaction. Unlike regular storage, transient storage is never written to disk and automatically clears when the transaction ends.",
-      "why_important": "Transient storage is much cheaper than persistent storage (100 gas vs 20,000+). It enables efficient reentrancy locks, single-transaction token approvals, and better inter-contract communication patterns - all without the cost of writing to permanent storage."
-    },
-    {
-      "proposal_type": "ERC",
-      "number": 926,
-      "title_descriptive": "ERC-926 proposes a standardized registry system where addresses can publish metadata about themselves. Instead of storing data directly, addresses point to external provider contracts that implement specific metadata interfaces, creating an extensible and flexible system.",
-      "why_important": "As more use cases require storing metadata about addresses (authorization, token preferences, claims), having a unified registry prevents ecosystem fragmentation. Each standard doesn't need its own registry - they can all share this common entry point."
-    },
-    {
-      "proposal_type": "EIP",
-      "number": 7702,
-      "title_descriptive": "EIP-7702 introduces a new transaction type that allows externally owned accounts (EOAs) to temporarily delegate their code execution to a smart contract. Users sign authorization tuples that point to a contract address, enabling batching, gas sponsorship, and privilege de-escalation without converting their EOA to a full smart contract wallet.",
-      "why_important": "This bridges the gap between EOAs and smart contract wallets, bringing account abstraction features to existing accounts. Users can batch multiple operations, have others pay their gas, and set sub-permissions - all while keeping their familiar address and private key."
-    },
-    {
-      "proposal_type": "EIP",
-      "number": 155,
-      "title_descriptive": "EIP-155 adds simple replay attack protection by including the chain ID in transaction signatures. Transactions include the chain identifier (1 for mainnet, etc.) when computing the signing hash, preventing a transaction signed for one network from being replayed on another.",
-      "why_important": "This was critical after the Ethereum/Ethereum Classic split. Without chain IDs, a transaction sent on one chain could be copied and executed on the other. This standard now protects all Ethereum-compatible chains from cross-chain replay attacks."
-    },
-    {
-      "proposal_type": "EIP",
-      "number": 7002,
-      "title_descriptive": "EIP-7002 allows validators to trigger withdrawals and exits directly from their execution layer withdrawal credentials (0x01 addresses). Instead of requiring the validator's active BLS key, the owner of the withdrawal address can initiate exits through a system contract, with a dynamic fee mechanism to prevent spam.",
-      "why_important": "Previously, only the validator's active key could initiate exits, creating trust issues in custody arrangements. This gives ultimate control to the withdrawal credential owner - critical for staking pools, institutional stakers, and scenarios where the active key is lost or compromised."
-    },
-    {
-      "proposal_type": "ERC",
-      "number": 7803,
-      "title_descriptive": "ERC-7803 extends EIP-712 typed data signing to better support smart contract accounts. It introduces \"signing domains\" to prevent replay attacks when the same key controls multiple accounts, and allows dapps to specify which signature authentication methods their contracts support.",
-      "why_important": "As smart contract wallets become common, the same signing key may control multiple accounts. This standard ensures signatures are bound to specific accounts, preventing replay attacks, and helps wallets display accurate signing context to users."
-    },
-    {
-      "proposal_type": "EIP",
-      "number": 2537,
-      "title_descriptive": "EIP-2537 adds precompiled contracts for BLS12-381 curve operations including point addition, multi-scalar multiplication, pairing checks, and field-to-curve mappings. These operations are essential for BLS signature verification with 120+ bits of security, compared to 80 bits from the existing BN254 curve.",
-      "why_important": "BLS signatures are used in Ethereum's proof-of-stake consensus. Native precompiles make on-chain verification of beacon chain data, aggregate signatures, and zero-knowledge proofs much more practical and gas-efficient than EVM implementations."
-    },
-    {
-      "proposal_type": "EIP",
-      "number": 7883,
-      "title_descriptive": "EIP-7883 increases the gas cost of the ModExp precompile by raising the minimum price from 200 to 500 gas, doubling the exponent length multiplier, and increasing costs for operations on values larger than 32 bytes. This addresses specific underpriced edge cases identified through benchmarking.",
-      "why_important": "The ModExp precompile had edge cases where computations were underpriced relative to their actual resource consumption. This repricing ensures the worst cases perform no slower than EcRecover, preventing potential DoS vectors from exploiting cheap but slow operations."
-    },
-    {
-      "proposal_type": "ERC",
-      "number": 1155,
-      "title_descriptive": "ERC-1155 is the Multi Token Standard that allows a single contract to manage multiple token types - fungible, non-fungible, or semi-fungible. Each token ID can have its own supply and metadata, and the standard supports batch transfers of multiple token types in a single transaction.",
-      "why_important": "Games and applications often need thousands of different item types. Instead of deploying separate contracts for each token, ERC-1155 consolidates them all, dramatically reducing deployment costs and enabling efficient batch operations that save gas."
-    },
-    {
-      "proposal_type": "ERC",
-      "number": 1967,
-      "title_descriptive": "ERC-1967 standardizes specific storage slots where proxy contracts store their implementation address, beacon address, and admin address. These slots are derived from hashes of known strings, ensuring they never collide with slots allocated by the Solidity compiler.",
-      "why_important": "Upgradeable proxies are everywhere in Ethereum, but without standard storage locations, block explorers and tools couldn't reliably detect them. This standard enables Etherscan to show the actual implementation contract's ABI and allows security tools to track proxy upgrades."
-    },
-    {
-      "proposal_type": "EIP",
-      "number": 712,
-      "title_descriptive": "EIP-712 defines a standard for hashing and signing typed structured data. Instead of signing opaque byte strings, users sign well-defined data structures with a domain separator, allowing wallets to display human-readable information about what's being signed.",
-      "why_important": "Before EIP-712, users saw meaningless hex strings when signing messages. Now wallets can show \"Approve 100 USDC to Uniswap\" instead of random bytes. This dramatically improves security by making phishing attacks harder and signature intent clear."
-    },
-    {
-      "proposal_type": "EIP",
-      "number": 7768,
-      "title_descriptive": "EIP-7768 proposes a mechanism for accounts without ETH to send transactions by paying tips through a \"free-for-all bucket\" contract. Block proposers front the gas costs, execute the user's signed transactions, and claim token payments from the bucket as compensation.",
-      "why_important": "This enables gasless transactions without modifying Ethereum clients or adding new transaction types. Users can pay with tokens instead of ETH while preserving their tx.origin, which is required for certain operations like NFT approvals."
-    },
-    {
-      "proposal_type": "EIP",
-      "number": 7819,
-      "title_descriptive": "EIP-7819 adds a SETDELEGATE instruction that allows smart contracts to create EIP-7702 style delegation designators at computed addresses. Unlike ERC-1167 clones that use EVM code for delegation, these designators are handled at the protocol level, avoiding issues with EOF compatibility.",
-      "why_important": "This brings the gas efficiency and clean delegation of EIP-7702 to contract-created clones. Factories can deploy lightweight proxies that don't need to copy calldata to memory or worry about EVM version incompatibilities between the proxy and implementation."
-    },
-    {
-      "proposal_type": "EIP",
-      "number": 7834,
-      "title_descriptive": "EIP-7834 adds an optional metadata section to the EOF (Ethereum Object Format) container, separate from the data section. This section is unreachable by code execution and changes to it don't affect the executable bytecode or shift DATALOADN offsets.",
-      "why_important": "Compiler metadata like IPFS hashes currently lives in the data section, making source code verification tricky and causing code changes when metadata size changes. A dedicated section makes verification straightforward and keeps metadata truly separate from execution."
-    },
-    {
-      "proposal_type": "EIP",
-      "number": 8068,
-      "title_descriptive": "EIP-8068 fixes a yield imbalance between validator credential types by adjusting effective balance hysteresis thresholds. Currently, compounding (0x02) validators earn ~2.3% less than skimming (0x01) validators due to ~0.75 ETH of balance not contributing to effective balance. The fix adjusts upward and downward thresholds to ensure fair treatment.",
-      "why_important": "This removes economic barriers to stake consolidation, which is essential for Ethereum's fast finality roadmap. Without this fix, validators have incentive to stay with 0x01 credentials or game partial withdrawals, fragmenting the validator set and slowing network upgrades."
-    },
-    {
-      "proposal_type": "EIP",
-      "number": 7937,
-      "title_descriptive": "EIP-7937 introduces 64-bit mode opcodes for the EVM using a C0 prefix byte. These opcodes perform arithmetic, comparison, bitwise, and flow operations on just the lower 64 bits of stack values, ignoring the upper 192 bits. Gas costs are significantly lower than 256-bit equivalents.",
-      "why_important": "Many computations don't need full 256-bit integers. By operating on native 64-bit values, EVM interpreters can use optimized machine instructions directly. This benefits cryptographic and mathematical code where performance-critical inner loops use smaller integers."
-    },
-    {
-      "proposal_type": "ERC",
-      "number": 2981,
-      "title_descriptive": "ERC-2981 is the NFT Royalty Standard that provides a way for NFT contracts to signal royalty payment information. The royaltyInfo function returns a recipient address and payment amount based on the sale price. Marketplaces can query this to determine creator compensation.",
-      "why_important": "Before this standard, every marketplace implemented royalties differently, making it impossible for creators to reliably receive compensation across platforms. While payment remains voluntary, this unified interface enables consistent royalty discovery and helps creators monetize their work."
-    },
-    {
-      "proposal_type": "ERC",
-      "number": 7579,
-      "title_descriptive": "ERC-7579 defines minimal interfaces for modular smart accounts and their modules. It specifies execution, configuration, and fallback behaviors, plus module types including validators, executors, fallback handlers, and hooks. Accounts can install and uninstall modules dynamically.",
-      "why_important": "Smart account implementations are fragmenting into incompatible ecosystems. This standard ensures modules work across different account implementations, preventing vendor lock-in. Developers build once, users choose their preferred account without losing access to the module ecosystem."
-    },
-    {
-      "proposal_type": "ERC",
-      "number": 7710,
-      "title_descriptive": "ERC-7710 standardizes how smart contracts delegate capabilities to other contracts or EOAs. A DelegationManager contract validates delegation authority and calls the delegator to execute actions. It uses ERC-7579's execution interface for flexible call types including batches and delegatecalls.",
-      "why_important": "This enables persistent delegated permissions through a single signature - creating long-lived sessions with dApps, granting bounded permissions to AI agents, or sharing invite links with specific capabilities. Users sign once for ongoing access within defined constraints."
-    },
-    {
-      "proposal_type": "ERC",
-      "number": 7795,
-      "title_descriptive": "ERC-7795 extends wallet_sendCalls to let dApps specify token prerequisites for transactions. Wallets can be told that users need minimum ERC-20 balances, ERC-721 ownership, or ERC-1155 holdings before executing. The wallet then helps users meet these requirements automatically.",
-      "why_important": "Users often have funds on different chains than where the dApp operates. This standard lets wallets bridge, swap, or consolidate assets automatically before the main transaction. The user experience becomes 'I want to do X' rather than 'First bridge, then swap, then approve, then...'."
-    },
-    {
-      "proposal_type": "RIP",
-      "number": 7712,
-      "title_descriptive": "RIP-7712 replaces sequential nonces with a two-dimensional nonce system for RIP-7560 transactions. Smart contract accounts can use different nonce keys for independent transaction streams, allowing parallel operations without coordination. The NonceManager precompile validates and increments nonces on-chain.",
-      "why_important": "Sequential nonces force multi-user smart accounts to coordinate all transactions. With 2D nonces, different signers or operations can proceed independently. This is essential for smart accounts operated by multiple parties or with separate workflows like configuration vs. regular transactions."
-    },
-    {
-      "proposal_type": "RIP",
-      "number": 7810,
-      "title_descriptive": "RIP-7810 defines the purpose and guidelines for Rollup Improvement Proposals. Similar to EIPs, RIPs provide specification documents for rollup features and processes. They go through Draft, Review, and Final stages, with coordination through Rollcall meetings and the Ethereum Magicians forum.",
-      "why_important": "As rollups proliferate, they need shared standards for interoperability without every team independently solving the same problems. RIPs provide a coordination mechanism for rollups to adopt common features, reducing fragmentation while allowing rollup-specific innovations."
-    },
-    {
-      "proposal_type": "EIP",
-      "number": 1108,
-      "title_descriptive": "EIP-1108 reduces gas costs for the alt_bn128 elliptic curve precompiles (ECADD, ECMUL, and pairing). Performance improvements in both Geth and Parity's underlying libraries made the original costs excessive. ECADD dropped from 500 to 150 gas, ECMUL from 40,000 to 6,000.",
-      "why_important": "Elliptic curve operations are foundational for privacy and scaling solutions. Lower costs make ZK-SNARKs, confidential transactions, and rollup proof verification practical. Projects like AZTEC and Matter Labs could reduce transaction costs by 75%+ with this repricing."
-    },
-    {
-      "proposal_type": "EIP",
-      "number": 1283,
-      "title_descriptive": "EIP-1283 introduces net gas metering for SSTORE operations, tracking original, current, and new values. Operations that don't change the final state (no-ops) cost only 200 gas. Multiple writes to the same slot in a transaction are priced based on net effect rather than each individual operation.",
-      "why_important": "Before this, each SSTORE cost thousands of gas regardless of final outcome. Net metering makes patterns like reentrancy locks, temporary storage, and repeated updates much cheaper. A lock that's set and cleared in the same transaction costs 400 gas instead of 25,000+."
-    },
-    {
-      "proposal_type": "EIP",
-      "number": 3607,
-      "title_descriptive": "EIP-3607 rejects transactions where the sender address has deployed code. If an address has a non-empty CODEHASH, it cannot initiate transactions as an EOA. This prevents a theoretical attack where an attacker finds a collision between a contract address and an EOA private key.",
-      "why_important": "With 160-bit addresses, a collision attack between contracts and EOAs is technically feasible (~$10B budget). An attacker could deploy a safe-looking contract, attract funds, then spend them using the collision EOA's private key. This closes that attack vector."
-    },
-    {
-      "proposal_type": "EIP",
-      "number": 4844,
-      "title_descriptive": "EIP-4844 introduces blob-carrying transactions with a new transaction type (0x03). Blobs are large data chunks (~125 KB each) that aren't accessible to the EVM but have commitments verifiable on-chain. A separate blob gas market with its own base fee manages data pricing.",
-      "why_important": "This is Ethereum's major scaling upgrade for rollups. Instead of posting data as expensive calldata, rollups use blobs at ~10x lower cost. The target is 0.375 MB of blob space per block, enabling dramatically cheaper L2 transactions while maintaining data availability for fraud/validity proofs."
-    },
-    {
-      "proposal_type": "EIP",
-      "number": 7543,
-      "title_descriptive": "EIP-7543 adds opcodes for arbitrary precision decimal arithmetic in the EVM. It introduces DECADD, DECMUL, DECINV for basic operations and DECEXP, DECLN, DECSIN for elementary functions. Values are represented as coefficient × 10^exponent with configurable precision.",
-      "why_important": "Many real-world calculations (finance, ML, science) need decimal math that's awkward in binary. Calculating a daily volatility from yearly requires taking the 16th root - currently needing massive Solidity libraries. Native decimal opcodes enable Black-Scholes pricing and similar math directly in contracts."
-    },
-    {
-      "proposal_type": "EIP",
-      "number": 7676,
-      "title_descriptive": "EIP-7676 prepares EOF contracts for potential address space extension by adding EXTBALANCE and modifying EXTCALL operations to halt if the top 96 bits of an address are non-zero. Legacy EVM trimmed addresses; EOF will reject invalid addresses outright.",
-      "why_important": "Ethereum may eventually need larger addresses (256-bit) for features like state expiry. EOF provides a clean break to require valid addresses from the start. When address extension arrives, EOF contracts will work without modification while legacy contracts need special handling."
-    },
-    {
-      "proposal_type": "EIP",
-      "number": 7701,
-      "title_descriptive": "EIP-7701 proposes native account abstraction through a new transaction type with separate validation, execution, and post-operation phases. It introduces CURRENT_ROLE and ACCEPT_ROLE opcodes, plus TXPARAM opcodes to access transaction fields. Contracts can pay gas for transactions executed from other contracts.",
-      "why_important": "While ERC-4337 works today, native AA integrates account abstraction into the protocol itself. This provides stronger guarantees, potentially lower overhead, and cleaner separation between validation (who can transact) and execution (what happens). It's the end-state vision for Ethereum accounts."
-    },
-    {
-      "proposal_type": "EIP",
-      "number": 7723,
-      "title_descriptive": "EIP-7723 formalizes the stages EIPs go through for network upgrades: Proposed, Considered, Declined, Scheduled, and Included. It defines what each status means, how EIPs move between them, and how they relate to upgrade devnets. An Upgrade Meta EIP tracks all proposals for each fork.",
-      "why_important": "The Ethereum upgrade process has grown complex with many stakeholders. Clear stage definitions help everyone understand where proposals stand, reduce confusion about what's 'in' a fork, and formalize the path from idea to deployment. This makes governance more transparent and predictable."
-    },
-    {
-      "proposal_type": "EIP",
-      "number": 7761,
-      "title_descriptive": "EIP-7761 adds an EXTCODETYPE instruction to EOF that returns whether an address is an EOA (0), legacy contract (1), or EOF contract (2). Unlike EXTCODESIZE which is banned in EOF, this minimal instruction allows contracts to distinguish account types without enabling full code introspection.",
-      "why_important": "ERC-721 and ERC-1155 safeTransfer functions need to know if a recipient is an EOA or contract to decide whether to call onERC*Received. EOF removes code introspection, but without EXTCODETYPE, these widely-used standards couldn't be implemented in EOF contracts."
-    },
-    {
-      "proposal_type": "EIP",
-      "number": 7807,
-      "title_descriptive": "EIP-7807 migrates Ethereum execution blocks from RLP encoding to SSZ (Simple Serialize). Block headers, transactions, receipts, and withdrawals all move to SSZ with hash_tree_root as the block hash. This completes the SSZ transition for everything except the state trie.",
-      "why_important": "SSZ enables the Consensus Layer to compute and verify block hashes directly, eliminating async communication with the Execution Layer during sync. Individual block fields become provable without full headers, the engine API can use binary encoding for 50% size reduction, and obsolete PoW-era fields can be dropped."
-    },
-    {
-      "proposal_type": "EIP",
-      "number": 8070,
-      "title_descriptive": "EIP-8070 implements a 'sparse blobpool' where execution layer nodes probabilistically fetch complete blob data (15% probability) or just sample cells (85%). It adds new devp2p messages for cell requests and aligns EL sampling with CL custody patterns.",
-      "why_important": "As Ethereum increases blob throughput, full blob replication creates severe bandwidth bottlenecks - EL bandwidth is 4-5x that of CL on test devnets. Sparse blobpool achieves ~4x bandwidth reduction while maintaining 98.6% probability of blob availability, enabling sustainable scaling."
-    },
-    {
-      "proposal_type": "ERC",
-      "number": 7513,
-      "title_descriptive": "ERC-7513 defines 'Smart NFTs' - NFTs that contain executable smart contract logic. A Smart-NFT has execute() and validatePermission() functions, registered through a Smart-Manager that handles verification states. An Intent-Proxy enables batch execution of multiple Smart-NFTs in one transaction.",
-      "why_important": "This creates NFTs as crypto-native assets representing on-chain code rather than external assets. Users can own and trade access to specific smart contract functionality, enable permissionless automation, and compose multiple contract interactions into simplified intent-based operations."
-    },
-    {
-      "proposal_type": "ERC",
-      "number": 7521,
-      "title_descriptive": "ERC-7521 creates a generalized intent specification for smart contract wallets. Users sign UserIntent messages containing segments that reference different intent standard contracts. Solvers combine these into IntentSolutions, handling execution order and cross-intent dependencies through a trusted entry point.",
-      "why_important": "Instead of smart contract wallets constantly upgrading for new intent formats, this single entry point handles signature verification while delegating intent interpretation to modular standard contracts. Users can adopt new intent standards just by signing messages that reference them."
-    },
-    {
-      "proposal_type": "ERC",
-      "number": 7662,
-      "title_descriptive": "ERC-7662 standardizes NFTs that represent AI agents. Each NFT stores agent name, AI model specification (GPT-4, Claude, etc.), and URIs pointing to system/user prompts. Prompt URIs can be encrypted so only NFT holders can decrypt and use the agent's configuration.",
-      "why_important": "AI agent creation is valuable intellectual property. This standard enables creators to trade and monetize their agent configurations on-chain while protecting prompt secrets through encryption. It opens a new market for AI agents as tradeable, collectible assets."
-    },
-    {
-      "proposal_type": "ERC",
-      "number": 7746,
-      "title_descriptive": "ERC-7746 defines an ILayer interface for composable security middleware. Layers implement beforeCall() and afterCall() hooks that wrap contract function execution. Protected contracts call these hooks before and after their logic, reverting if any layer fails validation.",
-      "why_important": "Security checks are often tightly coupled with business logic. This middleware pattern allows independent security providers to build reusable protections - rate limiting, access control, output verification - that can be composed and upgraded without modifying the protected contracts."
-    },
-    {
-      "proposal_type": "ERC",
-      "number": 7811,
-      "title_descriptive": "ERC-7811 introduces wallet_getAssets, a JSON-RPC method for wallets to report a user's complete asset holdings to dApps. Wallets return balances across chains and asset types (native, ERC-20, ERC-721), including assets not easily discoverable through on-chain indexing alone.",
-      "why_important": "Dapps currently guess user balances from on-chain data, missing cross-chain assets or restricting actions the wallet could actually complete. This lets wallets share their knowledge of user holdings, enabling smarter UX that accounts for total available assets rather than just current-chain balances."
-    },
-    {
-      "proposal_type": "ERC",
-      "number": 7818,
-      "title_descriptive": "ERC-7818 extends ERC-20 with token expiration based on epochs. Epochs can be block-based or time-based, and tokens track which epoch they were minted in. Transfers automatically use tokens closest to expiration (FIFO), and balanceOf returns only non-expired tokens.",
-      "why_important": "Many real-world assets have time limits: loyalty points, prepaid credits, bonds with maturity dates, game items with seasons. This standard enables expirable tokens on-chain without complex off-chain tracking, opening use cases from telecom data packages to closed-loop payment systems."
-    },
-    {
-      "proposal_type": "ERC",
-      "number": 7820,
-      "title_descriptive": "ERC-7820 creates a centralized Access Control Registry for managing roles across multiple smart contracts. Contracts register with an admin, who can then grant and revoke roles for any account. Batch operations allow managing roles across multiple contracts and accounts in one transaction.",
-      "why_important": "As protocols grow, managing access control across dozens of contracts becomes unwieldy. A shared registry reduces redundancy, provides consistent role management, and makes auditing easier. Protocols can query a single source of truth for permissions across their entire system."
-    },
-    {
-      "proposal_type": "RIP",
-      "number": 7755,
-      "title_descriptive": "RIP-7755 standardizes trustless cross-L2 calls using storage proofs. Users post requests with rewards to an Outbox contract, fulfillers execute on the destination chain's Inbox, and claim rewards by proving execution via storage proofs that leverage L1 as a shared settlement layer.",
-      "why_important": "Current cross-chain solutions rely on centralized relayers or external protocols. Since all L2s post state to Ethereum, any L2 can verify any other L2's state through L1. This creates a decentralized, permissionless utility for cross-chain calls with cryptographic proof of execution."
+      "proposal_type": "CAIP",
+      "number": 294,
+      "title_descriptive": "CAIP-294 defines a standardized browser-extension messaging transport for dapp-wallet discovery, prompting, and handshake using window events.",
+      "why_important": "It reduces wallet fragmentation with a chain-agnostic way for dapps to talk to extension wallets, improving interoperability and user experience."
     },
     {
       "proposal_type": "EIP",
@@ -290,21 +24,105 @@
     },
     {
       "proposal_type": "EIP",
-      "number": 1052,
-      "title_descriptive": "EIP-1052 adds the EXTCODEHASH opcode that returns the keccak256 hash of a contract's bytecode. For non-existent or empty accounts, it returns 0. For accounts without code, it returns the hash of empty data. The operation costs 400 gas, same as BALANCE.",
-      "why_important": "Many contracts need to verify if an address has specific code without copying the entire bytecode. Before EXTCODEHASH, contracts used expensive EXTCODECOPY. This enables cheap verification of implementation contracts in proxies, whitelisting by code hash, and checking if an address is a contract."
+      "number": 2,
+      "title_descriptive": "EIP-2 specifies the Homestead hard fork rules: higher intrinsic gas for contract-creation transactions, low-s signature enforcement, failure on insufficient code-deposit gas, and an updated difficulty adjustment formula.",
+      "why_important": "It was Ethereum's first major upgrade, reducing transaction malleability and contract-creation edge cases while stabilizing block times."
     },
     {
-      "proposal_type": "ERC",
-      "number": 165,
-      "title_descriptive": "ERC-165 standardizes interface detection through a supportsInterface(bytes4) function. Contracts publish which interfaces they implement by returning true for their interface IDs (the XOR of all function selectors). A two-call detection procedure verifies if a contract implements ERC-165 itself.",
-      "why_important": "Without interface detection, contracts had to guess what functionality others supported. ERC-165 enables safe interaction - check if a contract supports ERC-721 before calling safeTransferFrom, or verify ERC-2981 royalty support before querying fees. It's the foundation for composable contracts."
+      "proposal_type": "EIP",
+      "number": 155,
+      "title_descriptive": "EIP-155 adds simple replay attack protection by including the chain ID in transaction signatures. Transactions include the chain identifier (1 for mainnet, etc.) when computing the signing hash, preventing a transaction signed for one network from being replayed on another.",
+      "why_important": "This was critical after the Ethereum/Ethereum Classic split. Without chain IDs, a transaction sent on one chain could be copied and executed on the other. This standard now protects all Ethereum-compatible chains from cross-chain replay attacks."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 161,
+      "title_descriptive": "EIP-161 (Spurious Dragon) changes account creation and deletion: increment nonce on create, prevent creation of empty accounts, and delete empty touched accounts at the end of the transaction.",
+      "why_important": "These rules clear empty accounts and limit state bloat, improving node performance and DoS resistance."
     },
     {
       "proposal_type": "EIP",
       "number": 170,
       "title_descriptive": "EIP-170 limits smart contract bytecode to 24,576 bytes (0x6000). Contract creation that would produce code exceeding this limit fails with an out-of-gas error. This was implemented in the Spurious Dragon hard fork at block 2,675,000.",
       "why_important": "Without a limit, attackers could deploy massive contracts creating quadratic costs for code reading, preprocessing, and Merkle proof generation. The 24KB cap ensures predictable worst-case resource consumption while accommodating all practical contracts. Light clients especially benefit from bounded proof sizes."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 712,
+      "title_descriptive": "EIP-712 defines a standard for hashing and signing typed structured data. Instead of signing opaque byte strings, users sign well-defined data structures with a domain separator, allowing wallets to display human-readable information about what's being signed.",
+      "why_important": "Before EIP-712, users saw meaningless hex strings when signing messages. Now wallets can show \"Approve 100 USDC to Uniswap\" instead of random bytes. This dramatically improves security by making phishing attacks harder and signature intent clear."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 1014,
+      "title_descriptive": "EIP-1014 adds the CREATE2 opcode, which creates contracts at deterministic addresses derived from the sender, a salt, and the initcode hash.",
+      "why_important": "It enables counterfactual deployments, factory patterns, and state-channel workflows where addresses are known ahead of time."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 1052,
+      "title_descriptive": "EIP-1052 adds the EXTCODEHASH opcode that returns the keccak256 hash of a contract's bytecode. For non-existent or empty accounts, it returns 0. For accounts without code, it returns the hash of empty data. The operation costs 400 gas, same as BALANCE.",
+      "why_important": "Many contracts need to verify if an address has specific code without copying the entire bytecode. Before EXTCODEHASH, contracts used expensive EXTCODECOPY. This enables cheap verification of implementation contracts in proxies, whitelisting by code hash, and checking if an address is a contract."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 1108,
+      "title_descriptive": "EIP-1108 reduces gas costs for the alt_bn128 elliptic curve precompiles (ECADD, ECMUL, and pairing). Performance improvements in both Geth and Parity's underlying libraries made the original costs excessive. ECADD dropped from 500 to 150 gas, ECMUL from 40,000 to 6,000.",
+      "why_important": "Elliptic curve operations are foundational for privacy and scaling solutions. Lower costs make ZK-SNARKs, confidential transactions, and rollup proof verification practical. Projects like AZTEC and Matter Labs could reduce transaction costs by 75%+ with this repricing."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 1153,
+      "title_descriptive": "EIP-1153 adds two new EVM opcodes (TLOAD and TSTORE) for transient storage - data that persists only for the duration of a single transaction. Unlike regular storage, transient storage is never written to disk and automatically clears when the transaction ends.",
+      "why_important": "Transient storage is much cheaper than persistent storage (100 gas vs 20,000+). It enables efficient reentrancy locks, single-transaction token approvals, and better inter-contract communication patterns - all without the cost of writing to permanent storage."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 1283,
+      "title_descriptive": "EIP-1283 introduces net gas metering for SSTORE operations, tracking original, current, and new values. Operations that don't change the final state (no-ops) cost only 200 gas. Multiple writes to the same slot in a transaction are priced based on net effect rather than each individual operation.",
+      "why_important": "Before this, each SSTORE cost thousands of gas regardless of final outcome. Net metering makes patterns like reentrancy locks, temporary storage, and repeated updates much cheaper. A lock that's set and cleared in the same transaction costs 400 gas instead of 25,000+."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 1344,
+      "title_descriptive": "EIP-1344 adds the CHAINID opcode that returns the current chain's EIP-155 chain ID.",
+      "why_important": "Contracts can verify chain context for replay-protected signatures and multi-chain logic."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 1474,
+      "title_descriptive": "EIP-1474 defines a canonical Ethereum JSON-RPC specification for method names, parameters, and responses.",
+      "why_important": "It gives wallets and tooling a consistent RPC surface across clients, reducing incompatibilities."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 1559,
+      "title_descriptive": "EIP-1559 introduces a new typed transaction with maxFeePerGas and maxPriorityFeePerGas plus an algorithmic base fee that adjusts per block and is burned; block gas becomes elastic around a target.",
+      "why_important": "It makes fees more predictable, reduces fee spikes, and burns base fees, improving user experience and monetary policy."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 1884,
+      "title_descriptive": "EIP-1884 reprices trie-size-dependent opcodes like SLOAD, BALANCE, and EXTCODE* to higher gas costs.",
+      "why_important": "It aligns gas fees with real resource usage and mitigates DoS risks from underpriced state access."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 2124,
+      "title_descriptive": "EIP-2124 defines fork identifiers (forkid) derived from genesis hash and fork blocks for devp2p compatibility checks.",
+      "why_important": "Nodes can quickly drop incompatible peers and avoid cross-chain connections after forks."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 2200,
+      "title_descriptive": "EIP-2200 formalizes net gas metering for SSTORE with costs and refunds based on original, current, and new values.",
+      "why_important": "It makes temporary storage patterns cheaper and keeps gas accounting consistent across clients."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 2537,
+      "title_descriptive": "EIP-2537 adds precompiled contracts for BLS12-381 curve operations including point addition, multi-scalar multiplication, pairing checks, and field-to-curve mappings. These operations are essential for BLS signature verification with 120+ bits of security, compared to 80 bits from the existing BN254 curve.",
+      "why_important": "BLS signatures are used in Ethereum's proof-of-stake consensus. Native precompiles make on-chain verification of beacon chain data, aggregate signatures, and zero-knowledge proofs much more practical and gas-efficient than EVM implementations."
     },
     {
       "proposal_type": "EIP",
@@ -320,15 +138,57 @@
     },
     {
       "proposal_type": "EIP",
+      "number": 2718,
+      "title_descriptive": "EIP-2718 introduces a typed transaction envelope (`type || payload`) and typed receipts.",
+      "why_important": "It provides a forward-compatible framework for new transaction types like access lists, EIP-1559, and blobs."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 2926,
+      "title_descriptive": "EIP-2926 defines chunk-based code merkleization with codeRoot/codeSize fields and fixed-size code chunks.",
+      "why_important": "It reduces witness sizes and enables partial code proofs, supporting stateless-client roadmaps."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 2929,
+      "title_descriptive": "EIP-2929 raises gas costs for cold state access and introduces warm/cold access rules for SLOAD, BALANCE, EXTCODE*, and CALL-family opcodes.",
+      "why_important": "It reprices under-costed operations and improves DoS resistance while making access lists useful."
+    },
+    {
+      "proposal_type": "EIP",
       "number": 2930,
       "title_descriptive": "EIP-2930 introduces optional access lists in transactions - pre-declared addresses and storage keys the transaction will access. Accesses in the list cost less (100 gas instead of 2600) because the client can pre-load them. This also mitigates contract breakage from EIP-2929's higher cold access costs.",
       "why_important": "When EIP-2929 increased cold storage access costs, some contracts risked breaking. Access lists let transactions pre-pay for storage at a discount, ensuring existing contracts work. The format also enables future optimizations like parallel state loading and block-level witnesses."
     },
     {
       "proposal_type": "EIP",
+      "number": 2982,
+      "title_descriptive": "EIP-2982 specifies Serenity Phase 0, introducing the Beacon Chain and validator deposits while leaving the execution chain unchanged.",
+      "why_important": "It bootstrapped Ethereum's proof-of-stake system and paved the way for The Merge."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 3074,
+      "title_descriptive": "Allow externally owned accounts to delegate control to a contract.",
+      "why_important": "This EIP introduces new opcodes that allow externally owned accounts (EOAs) to delegate their authority to smart contracts. This could significantly enhance how transactions are authorized and executed through wallets, enabling more sophisticated interaction patterns with dapps."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 3540,
+      "title_descriptive": "EIP-3540 defines EOF v1, a versioned EVM object format with code/data separation and deploy-time validation.",
+      "why_important": "It improves safety and enables future EVM upgrades and tooling improvements."
+    },
+    {
+      "proposal_type": "EIP",
       "number": 3541,
       "title_descriptive": "EIP-3541 prohibits deploying new contracts whose bytecode starts with the 0xEF byte. Existing contracts are unaffected. This reserves 0xEF as a magic byte for future use, specifically for the EVM Object Format (EOF).",
       "why_important": "EOF needs a way to distinguish new-format contracts from legacy ones. By reserving 0xEF early (no deployed mainnet contracts started with it), EOF can safely use 0xEF00 as its magic header. Without this, EOF would need complex compatibility handling for hypothetical legacy 0xEF contracts."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 3607,
+      "title_descriptive": "EIP-3607 rejects transactions where the sender address has deployed code. If an address has a non-empty CODEHASH, it cannot initiate transactions as an EOA. This prevents a theoretical attack where an attacker finds a collision between a contract address and an EOA private key.",
+      "why_important": "With 160-bit addresses, a collision attack between contracts and EOAs is technically feasible (~$10B budget). An attacker could deploy a safe-looking contract, attract funds, then spend them using the collision EOA's private key. This closes that attack vector."
     },
     {
       "proposal_type": "EIP",
@@ -339,7 +199,7 @@
     {
       "proposal_type": "EIP",
       "number": 3860,
-      "title_descriptive": "EIP-3860 limits contract initcode to 49,152 bytes (2× the contract size limit) and charges 2 gas per 32-byte chunk. Previously, initcode had no size limit and jumpdest-analysis wasn't metered, creating potential DoS vectors through massive deployment code.",
+      "title_descriptive": "EIP-3860 limits contract initcode to 49,152 bytes (2\u00d7 the contract size limit) and charges 2 gas per 32-byte chunk. Previously, initcode had no size limit and jumpdest-analysis wasn't metered, creating potential DoS vectors through massive deployment code.",
       "why_important": "Without limits, attackers could craft expensive initcode that consumed resources during jumpdest-analysis without paying. The limit and metering close this vector while allowing most contracts to deploy normally. It also simplifies EVM implementations by keeping code offsets within 16 bits."
     },
     {
@@ -350,9 +210,57 @@
     },
     {
       "proposal_type": "EIP",
+      "number": 4788,
+      "title_descriptive": "EIP-4788 commits beacon chain block roots into the execution layer and stores them in a system contract.",
+      "why_important": "It enables trust-minimized access to consensus data inside the EVM for bridges, L2s, and light clients."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 4844,
+      "title_descriptive": "EIP-4844 introduces blob-carrying transactions with a new transaction type (0x03). Blobs are large data chunks (~125 KB each) that aren't accessible to the EVM but have commitments verifiable on-chain. A separate blob gas market with its own base fee manages data pricing.",
+      "why_important": "This is Ethereum's major scaling upgrade for rollups. Instead of posting data as expensive calldata, rollups use blobs at ~10x lower cost. The target is 0.375 MB of blob space per block, enabling dramatically cheaper L2 transactions while maintaining data availability for fraud/validity proofs."
+    },
+    {
+      "proposal_type": "EIP",
       "number": 5792,
       "title_descriptive": "EIP-5792 defines wallet_sendCalls, wallet_getCallsStatus, and wallet_getCapabilities JSON-RPC methods. Apps can send batches of calls to wallets, query whether wallets support atomic execution, and check transaction status. The atomic capability signals if calls execute as one transaction or separately.",
       "why_important": "eth_sendTransaction is a relic from when nodes were wallets. Modern smart accounts can batch calls, use paymasters, and guarantee atomicity. This API enables apps to leverage these features while working with both EOAs and smart accounts, with graceful fallbacks for simpler wallets."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 5793,
+      "title_descriptive": "EIP-5793 extends the eth/68 `NewPooledTransactionHashes` message to include transaction type and size.",
+      "why_important": "It allows peers to selectively fetch large or new transaction types (like blobs), improving propagation efficiency."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 5806,
+      "title_descriptive": "Adds a new transaction type that allows EOAs to execute arbitrary code through delegation.",
+      "why_important": "Introduces a new transaction type that allows Externally Owned Accounts (EOAs) to execute arbitrary code using a delegate-call-like mechanism. This is significant because it extends the capabilities of EOAs, which are traditionally limited to deploying contracts and sending \"call\" transactions, by enabling them to perform more complex operations similar to those of smart contracts. EIP-5806 is noteworthy for its potential to significantly enhance the functionality and security of EOAs, paving the way for more complex and secure interactions on the Ethereum network."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 6122,
+      "title_descriptive": "EIP-6122 updates forkid checks to account for timestamp-based forks on the proof-of-stake chain.",
+      "why_important": "It keeps p2p compatibility checks accurate post-merge and prevents mismatched peers."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 6690,
+      "title_descriptive": "EIP-6690 adds new EVM opcodes for modular arithmetic on large numbers up to 768 bits wide. It introduces virtual registers for efficient computation and optimized operations for cryptographic calculations using Montgomery multiplication.",
+      "why_important": "Many cryptographic operations are bottlenecked by modular arithmetic. This proposal would enable efficient implementation of various cryptographic primitives directly as EVM contracts, expanding what's possible for on-chain cryptography and zero-knowledge proofs."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 6780,
+      "title_descriptive": "EIP-6780 restricts SELFDESTRUCT to only delete accounts created in the same transaction; otherwise it only transfers balance.",
+      "why_important": "It simplifies state changes and is needed for Verkle and statelessness, reducing unexpected contract deletions."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 6800,
+      "title_descriptive": "EIP-6800 introduces a Verkle state tree alongside the MPT, freezing the MPT and storing new writes in a unified Verkle keyspace.",
+      "why_important": "It dramatically reduces witness sizes and is a key step toward stateless clients."
     },
     {
       "proposal_type": "EIP",
@@ -362,9 +270,63 @@
     },
     {
       "proposal_type": "EIP",
+      "number": 6963,
+      "title_descriptive": "Using window events to announce injected Wallet Providers.",
+      "why_important": "A web dapp can integrate with multiple wallets simultaneously by adding support for EIP-6963, which introduces an alternative discovery mechanism to the window.ethereum injected provider. No more hijacking the window.ethereum object and introducing a race condition."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7002,
+      "title_descriptive": "EIP-7002 allows validators to trigger withdrawals and exits directly from their execution layer withdrawal credentials (0x01 addresses). Instead of requiring the validator's active BLS key, the owner of the withdrawal address can initiate exits through a system contract, with a dynamic fee mechanism to prevent spam.",
+      "why_important": "Previously, only the validator's active key could initiate exits, creating trust issues in custody arrangements. This gives ultimate control to the withdrawal credential owner - critical for staking pools, institutional stakers, and scenarios where the active key is lost or compromised."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7251,
+      "title_descriptive": "EIP-7251 raises MAX_EFFECTIVE_BALANCE (up to 2048 ETH) while keeping the 32 ETH minimum per validator.",
+      "why_important": "It enables validator consolidation and compounding, reducing network overhead."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7480,
+      "title_descriptive": "EIP-7480 adds EOF data-section access instructions (DATALOAD, DATALOADN, DATASIZE, DATACOPY).",
+      "why_important": "It makes EOF's code/data separation usable for constants and metadata without copying into code."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7516,
+      "title_descriptive": "EIP-7516 adds the BLOBBASEFEE opcode that returns the current blob base fee.",
+      "why_important": "It lets contracts react to blob fee conditions and price blob usage on-chain."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7543,
+      "title_descriptive": "EIP-7543 adds opcodes for arbitrary precision decimal arithmetic in the EVM. It introduces DECADD, DECMUL, DECINV for basic operations and DECEXP, DECLN, DECSIN for elementary functions. Values are represented as coefficient \u00d7 10^exponent with configurable precision.",
+      "why_important": "Many real-world calculations (finance, ML, science) need decimal math that's awkward in binary. Calculating a daily volatility from yearly requires taking the 16th root - currently needing massive Solidity libraries. Native decimal opcodes enable Black-Scholes pricing and similar math directly in contracts."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7569,
+      "title_descriptive": "EIP-7569 is a meta EIP listing the EIPs included in the Dencun hard fork across execution and consensus layers.",
+      "why_important": "It provides a single authoritative checklist for clients and tooling during the upgrade."
+    },
+    {
+      "proposal_type": "EIP",
       "number": 7591,
       "title_descriptive": "EIP-7591 proposes BLS-signed transactions as a new transaction type (0x04). Signatures use BLS instead of ECDSA, with public keys hashed to derive addresses. Block headers gain an aggregated_sig field combining all BLS transaction signatures for batch verification.",
       "why_important": "BLS signature aggregation can reduce block size - individual signatures are removed after aggregation. This demonstrates Ethereum's ability to adopt different signature schemes, potentially including post-quantum algorithms. The ~1.5% space savings per block compounds over time."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7594,
+      "title_descriptive": "EIP-7594 defines PeerDAS, a peer data availability sampling protocol for blobs.",
+      "why_important": "It enables higher blob throughput with manageable bandwidth, which is critical for rollup scaling."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7600,
+      "title_descriptive": "All the EIPs coming in the next network upgrade: Pectra (Prague/Electra).",
+      "why_important": "Pectra upgrade is scheduled for release by the end of Q1 2025. It will be the next big upgrade and the one after won't come soon, so all the changes are important and will be the status quo for the foreseeable future."
     },
     {
       "proposal_type": "EIP",
@@ -374,9 +336,51 @@
     },
     {
       "proposal_type": "EIP",
+      "number": 7612,
+      "title_descriptive": "EIP-7612 proposes a Verkle transition via an overlay tree: freeze the MPT and store new state writes in Verkle.",
+      "why_important": "It provides a practical migration path to Verkle with minimal disruption."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7623,
+      "title_descriptive": "EIP-7623 increases calldata gas costs to reduce maximum execution payload sizes.",
+      "why_important": "It limits oversized calldata-heavy blocks and keeps propagation safe as gas limits rise."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7642,
+      "title_descriptive": "EIP-7642 modifies the eth protocol handshake to announce served history range and removes total difficulty from status and receipts.",
+      "why_important": "It supports history expiry post-merge and simplifies networking."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7676,
+      "title_descriptive": "EIP-7676 prepares EOF contracts for potential address space extension by adding EXTBALANCE and modifying EXTCALL operations to halt if the top 96 bits of an address are non-zero. Legacy EVM trimmed addresses; EOF will reject invalid addresses outright.",
+      "why_important": "Ethereum may eventually need larger addresses (256-bit) for features like state expiry. EOF provides a clean break to require valid addresses from the start. When address extension arrives, EOF contracts will work without modification while legacy contracts need special handling."
+    },
+    {
+      "proposal_type": "EIP",
       "number": 7685,
       "title_descriptive": "EIP-7685 creates a general-purpose framework for execution layer requests to the consensus layer. Each request has a type byte and opaque data. A requests_hash in block headers commits to all requests. Individual request types (like validator withdrawals) define their own data formats.",
       "why_important": "As smart contract validators proliferate, more operations need to flow from EL to CL - exits, consolidations, deposits. Instead of adding new block fields for each, this unified framework handles any request type. Adding new requests becomes a matter of defining the type, not changing block structure."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7691,
+      "title_descriptive": "EIP-7691 increases blob target and max per block to expand data availability capacity.",
+      "why_important": "It gives rollups more blob space, lowering L2 fees and increasing throughput."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7701,
+      "title_descriptive": "EIP-7701 proposes native account abstraction through a new transaction type with separate validation, execution, and post-operation phases. It introduces CURRENT_ROLE and ACCEPT_ROLE opcodes, plus TXPARAM opcodes to access transaction fields. Contracts can pay gas for transactions executed from other contracts.",
+      "why_important": "While ERC-4337 works today, native AA integrates account abstraction into the protocol itself. This provides stronger guarantees, potentially lower overhead, and cleaner separation between validation (who can transact) and execution (what happens). It's the end-state vision for Ethereum accounts."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7702,
+      "title_descriptive": "EIP-7702 introduces a new transaction type that allows externally owned accounts (EOAs) to temporarily delegate their code execution to a smart contract. Users sign authorization tuples that point to a contract address, enabling batching, gas sponsorship, and privilege de-escalation without converting their EOA to a full smart contract wallet.",
+      "why_important": "This bridges the gap between EOAs and smart contract wallets, bringing account abstraction features to existing accounts. Users can batch multiple operations, have others pay their gas, and set sub-permissions - all while keeping their familiar address and private key."
     },
     {
       "proposal_type": "EIP",
@@ -392,9 +396,45 @@
     },
     {
       "proposal_type": "EIP",
+      "number": 7723,
+      "title_descriptive": "EIP-7723 formalizes the stages EIPs go through for network upgrades: Proposed, Considered, Declined, Scheduled, and Included. It defines what each status means, how EIPs move between them, and how they relate to upgrade devnets. An Upgrade Meta EIP tracks all proposals for each fork.",
+      "why_important": "The Ethereum upgrade process has grown complex with many stakeholders. Clear stage definitions help everyone understand where proposals stand, reduce confusion about what's 'in' a fork, and formalize the path from idea to deployment. This makes governance more transparent and predictable."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7745,
+      "title_descriptive": "EIP-7745 replaces fixed 2048-bit log blooms with a scalable log and transaction index with low false positives.",
+      "why_important": "It enables more reliable, trustless log and transaction lookup as event volume grows."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7761,
+      "title_descriptive": "EIP-7761 adds an EXTCODETYPE instruction to EOF that returns whether an address is an EOA (0), legacy contract (1), or EOF contract (2). Unlike EXTCODESIZE which is banned in EOF, this minimal instruction allows contracts to distinguish account types without enabling full code introspection.",
+      "why_important": "ERC-721 and ERC-1155 safeTransfer functions need to know if a recipient is an EOA or contract to decide whether to call onERC*Received. EOF removes code introspection, but without EXTCODETYPE, these widely-used standards couldn't be implemented in EOF contracts."
+    },
+    {
+      "proposal_type": "EIP",
       "number": 7762,
       "title_descriptive": "EIP-7762 raises MIN_BASE_FEE_PER_BLOB_GAS from 1 wei to 2^25 wei (~33 million wei). This speeds up blob price discovery when demand exceeds supply. The excess_blob_gas resets to 0 at the fork to prevent a price spike.",
       "why_important": "Blob pricing starts at 1 wei and must climb many doublings to reach market-clearing prices during congestion. Each doubling takes ~6 blocks of full blobs. A higher floor means price discovery happens in minutes instead of hours, reducing free-riding during high-demand periods."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7768,
+      "title_descriptive": "EIP-7768 proposes a mechanism for accounts without ETH to send transactions by paying tips through a \"free-for-all bucket\" contract. Block proposers front the gas costs, execute the user's signed transactions, and claim token payments from the bucket as compensation.",
+      "why_important": "This enables gasless transactions without modifying Ethereum clients or adding new transaction types. Users can pay with tokens instead of ETH while preserving their tx.origin, which is required for certain operations like NFT approvals."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7807,
+      "title_descriptive": "EIP-7807 migrates Ethereum execution blocks from RLP encoding to SSZ (Simple Serialize). Block headers, transactions, receipts, and withdrawals all move to SSZ with hash_tree_root as the block hash. This completes the SSZ transition for everything except the state trie.",
+      "why_important": "SSZ enables the Consensus Layer to compute and verify block hashes directly, eliminating async communication with the Execution Layer during sync. Individual block fields become provable without full headers, the engine API can use binary encoding for 50% size reduction, and obsolete PoW-era fields can be dropped."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7819,
+      "title_descriptive": "EIP-7819 adds a SETDELEGATE instruction that allows smart contracts to create EIP-7702 style delegation designators at computed addresses. Unlike ERC-1167 clones that use EVM code for delegation, these designators are handled at the protocol level, avoiding issues with EOF compatibility.",
+      "why_important": "This brings the gas efficiency and clean delegation of EIP-7702 to contract-created clones. Factories can deploy lightweight proxies that don't need to copy calldata to memory or worry about EVM version incompatibilities between the proxy and implementation."
     },
     {
       "proposal_type": "EIP",
@@ -410,9 +450,99 @@
     },
     {
       "proposal_type": "EIP",
+      "number": 7834,
+      "title_descriptive": "EIP-7834 adds an optional metadata section to the EOF (Ethereum Object Format) container, separate from the data section. This section is unreachable by code execution and changes to it don't affect the executable bytecode or shift DATALOADN offsets.",
+      "why_important": "Compiler metadata like IPFS hashes currently lives in the data section, making source code verification tricky and causing code changes when metadata size changes. A dedicated section makes verification straightforward and keeps metadata truly separate from execution."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7840,
+      "title_descriptive": "EIP-7840 adds `blobSchedule` to execution-layer config files to define per-fork blob targets, max blobs, and base fee update fractions.",
+      "why_important": "It allows blob-parameter updates via config changes without client code changes."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7864,
+      "title_descriptive": "EIP-7864 introduces a unified binary state tree that merges accounts, storage, and code into one keyspace.",
+      "why_important": "It reduces proof sizes and makes state more friendly to validity proofs and statelessness."
+    },
+    {
+      "proposal_type": "EIP",
       "number": 7870,
       "title_descriptive": "EIP-7870 specifies hardware and bandwidth recommendations for Ethereum nodes. Full nodes need 4TB NVMe, 32GB RAM, and 50/15 Mbps. Validators need 64GB RAM and better CPUs. Local block builders need 100/50 Mbps bandwidth for timely block propagation.",
       "why_important": "Without shared specs, client benchmarks are incomparable and protocol decisions lack context. This provides a reference for node operators planning hardware, gives developers targets for optimizations, and ensures upgrade discussions consider realistic home-staker capabilities."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7883,
+      "title_descriptive": "EIP-7883 increases the gas cost of the ModExp precompile by raising the minimum price from 200 to 500 gas, doubling the exponent length multiplier, and increasing costs for operations on values larger than 32 bytes. This addresses specific underpriced edge cases identified through benchmarking.",
+      "why_important": "The ModExp precompile had edge cases where computations were underpriced relative to their actual resource consumption. This repricing ensures the worst cases perform no slower than EcRecover, preventing potential DoS vectors from exploiting cheap but slow operations."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7892,
+      "title_descriptive": "EIP-7892 defines Blob Parameter Only hard forks to adjust blob target, max, and base fee update fraction via configuration only.",
+      "why_important": "It enables fast, low-overhead blob capacity scaling based on real-world demand."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7907,
+      "title_descriptive": "EIP-7907 raises the contract code size limit to 64KB and meters extra gas for loading code beyond 24KB; it also increases the initcode limit to 128KB.",
+      "why_important": "It lets developers deploy larger contracts while paying for the extra resource cost, avoiding DoS risk."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7910,
+      "title_descriptive": "EIP-7910 adds an `eth_config` JSON-RPC method exposing current, next, and previous fork configuration.",
+      "why_important": "It helps clients and operators stay correctly configured for upcoming forks, reducing accidental splits."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7916,
+      "title_descriptive": "EIP-7916 introduces ProgressiveList and ProgressiveBitlist SSZ types with progressive Merkleization and no fixed capacity.",
+      "why_important": "It reduces hashing overhead for small lists and keeps proofs stable across forks."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7918,
+      "title_descriptive": "EIP-7918 sets a reserve price for blobs tied to execution base fee so blob base fee cannot fall below execution costs.",
+      "why_important": "It keeps the blob fee market responsive and ensures blob users pay for compute."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7928,
+      "title_descriptive": "EIP-7928 defines block-level access lists recording all accessed accounts and storage slots with post-execution values.",
+      "why_important": "It enables parallel disk reads, executionless state updates, and faster validation."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7937,
+      "title_descriptive": "EIP-7937 introduces 64-bit mode opcodes for the EVM using a C0 prefix byte. These opcodes perform arithmetic, comparison, bitwise, and flow operations on just the lower 64 bits of stack values, ignoring the upper 192 bits. Gas costs are significantly lower than 256-bit equivalents.",
+      "why_important": "Many computations don't need full 256-bit integers. By operating on native 64-bit values, EVM interpreters can use optimized machine instructions directly. This benefits cryptographic and mathematical code where performance-critical inner loops use smaller integers."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 7951,
+      "title_descriptive": "EIP-7951 adds a secp256r1 (P-256) signature verification precompile.",
+      "why_important": "It brings native support for passkeys and widely used hardware security modules."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 8032,
+      "title_descriptive": "EIP-8032 prices SSTORE based on contract storage size using a `storage_count` field and size-based multiplier.",
+      "why_important": "It discourages state bloat by making large-storage contracts pay more."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 8037,
+      "title_descriptive": "EIP-8037 increases and harmonizes state-creation costs and introduces separate state-gas metering.",
+      "why_important": "It limits state growth as gas limits rise while allowing higher throughput and larger contracts."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 8038,
+      "title_descriptive": "EIP-8038 raises gas costs for state-access operations and adjusts pricing for EXTCODESIZE and EXTCODECOPY.",
+      "why_important": "It aligns gas with current state access costs and reduces DoS risks from underpriced reads."
     },
     {
       "proposal_type": "EIP",
@@ -421,10 +551,22 @@
       "why_important": "Cheap compute operations should cost fractions of gas, but rounding errors force them to cost at least 1 gas. Milli-gas enables accurate pricing for fast operations without disrupting UX with 100x multiplied gas costs. This unblocks repricing needed to properly separate compute and storage costs."
     },
     {
-      "proposal_type": "ERC",
-      "number": 165,
-      "title_descriptive": "ERC-165 standardizes interface detection through a supportsInterface(bytes4) function. Contracts publish which interfaces they implement by returning true for their interface IDs (the XOR of all function selectors). A two-call detection procedure verifies if a contract implements ERC-165 itself.",
-      "why_important": "Without interface detection, contracts had to guess what functionality others supported. ERC-165 enables safe interaction - check if a contract supports ERC-721 before calling safeTransferFrom, or verify ERC-2981 royalty support before querying fees. It's the foundation for composable contracts."
+      "proposal_type": "EIP",
+      "number": 8068,
+      "title_descriptive": "EIP-8068 fixes a yield imbalance between validator credential types by adjusting effective balance hysteresis thresholds. Currently, compounding (0x02) validators earn ~2.3% less than skimming (0x01) validators due to ~0.75 ETH of balance not contributing to effective balance. The fix adjusts upward and downward thresholds to ensure fair treatment.",
+      "why_important": "This removes economic barriers to stake consolidation, which is essential for Ethereum's fast finality roadmap. Without this fix, validators have incentive to stay with 0x01 credentials or game partial withdrawals, fragmenting the validator set and slowing network upgrades."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 8070,
+      "title_descriptive": "EIP-8070 implements a 'sparse blobpool' where execution layer nodes probabilistically fetch complete blob data (15% probability) or just sample cells (85%). It adds new devp2p messages for cell requests and aligns EL sampling with CL custody patterns.",
+      "why_important": "As Ethereum increases blob throughput, full blob replication creates severe bandwidth bottlenecks - EL bandwidth is 4-5x that of CL on test devnets. Sparse blobpool achieves ~4x bandwidth reduction while maintaining 98.6% probability of blob availability, enabling sustainable scaling."
+    },
+    {
+      "proposal_type": "EIP",
+      "number": 8077,
+      "title_descriptive": "EIP-8077 extends transaction announcements to include sender address and nonce alongside hash, type, and size.",
+      "why_important": "It improves mempool synchronization by enabling nonce-gap filling and smarter fetch scheduling."
     },
     {
       "proposal_type": "ERC",
@@ -434,9 +576,74 @@
     },
     {
       "proposal_type": "ERC",
+      "number": 165,
+      "title_descriptive": "ERC-165 standardizes interface detection through a supportsInterface(bytes4) function. Contracts publish which interfaces they implement by returning true for their interface IDs (the XOR of all function selectors). A two-call detection procedure verifies if a contract implements ERC-165 itself.",
+      "why_important": "Without interface detection, contracts had to guess what functionality others supported. ERC-165 enables safe interaction - check if a contract supports ERC-721 before calling safeTransferFrom, or verify ERC-2981 royalty support before querying fees. It's the foundation for composable contracts."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 634,
+      "title_descriptive": "ERC-634 adds text record storage to ENS resolvers. Names can associate arbitrary key-value string data through a text(node, key) function. Standard keys include email, url, avatar, and description. Service-specific keys follow reverse domain notation like com.twitter.",
+      "why_important": "ENS is more than just address resolution. Text records turn ENS names into decentralized profiles - linking social accounts, displaying avatars, storing descriptions. This created the foundation for ENS-based identity used by wallets, social apps, and Web3 profiles."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 721,
+      "title_descriptive": "ERC-721 defines the standard API for non-fungible tokens, including ownership, transfers, and metadata.",
+      "why_important": "It underpins the NFT ecosystem and lets wallets, marketplaces, and dapps integrate any NFT uniformly."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 926,
+      "title_descriptive": "ERC-926 proposes a standardized registry system where addresses can publish metadata about themselves. Instead of storing data directly, addresses point to external provider contracts that implement specific metadata interfaces, creating an extensible and flexible system.",
+      "why_important": "As more use cases require storing metadata about addresses (authorization, token preferences, claims), having a unified registry prevents ecosystem fragmentation. Each standard doesn't need its own registry - they can all share this common entry point."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 1155,
+      "title_descriptive": "ERC-1155 is the Multi Token Standard that allows a single contract to manage multiple token types - fungible, non-fungible, or semi-fungible. Each token ID can have its own supply and metadata, and the standard supports batch transfers of multiple token types in a single transaction.",
+      "why_important": "Games and applications often need thousands of different item types. Instead of deploying separate contracts for each token, ERC-1155 consolidates them all, dramatically reducing deployment costs and enabling efficient batch operations that save gas."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 1271,
+      "why_important": "Smart Accounts (which are Smart Contracts) can now sign transactions on behalf of a user. In the past, only EOA accounts could this and a user would need to be present to sign the transaction. This will tie in nicely with the concept of session keys (sometimes called permissions), so apps can perform actions on behalf of users (assuming they\u2019ve been granted permission by the user)."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 1484,
+      "title_descriptive": "ERC-1484 defines a digital identity registry that assigns identities (EINs) and links multiple addresses, providers, and resolvers to one identity.",
+      "why_important": "It creates a shared identity layer interoperable with other standards and supports recovery, reducing fragmentation."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 1967,
+      "title_descriptive": "ERC-1967 standardizes specific storage slots where proxy contracts store their implementation address, beacon address, and admin address. These slots are derived from hashes of known strings, ensuring they never collide with slots allocated by the Solidity compiler.",
+      "why_important": "Upgradeable proxies are everywhere in Ethereum, but without standard storage locations, block explorers and tools couldn't reliably detect them. This standard enables Etherscan to show the actual implementation contract's ABI and allows security tools to track proxy upgrades."
+    },
+    {
+      "proposal_type": "ERC",
       "number": 2334,
       "title_descriptive": "ERC-2334 defines a hierarchical key derivation path for BLS12-381 keys used in Ethereum's Proof-of-Stake. The path format is m/purpose/coin_type/account/use, organizing validator keys for signing, withdrawal, and other operations from a single seed phrase.",
       "why_important": "Ethereum's beacon chain uses BLS signatures which are incompatible with Bitcoin's BIP-44 derivation. This standard ensures all wallets generate validator keys the same way, enabling portability between staking providers and consistent key recovery from seed phrases."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 2612,
+      "title_descriptive": "ERC-2612 adds a \"permit\" function to ERC-20 tokens that allows users to approve token spending through a signed message instead of an on-chain transaction. The signature follows EIP-712 standards and can be submitted by anyone.",
+      "why_important": "This eliminates the need for two separate transactions (approve + transfer) when interacting with tokens. Users can now authorize and execute in one step, and don't need to hold ETH for the approval transaction - enabling gasless token interactions and better UX."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 2615,
+      "title_descriptive": "ERC-2615 extends ERC-721 with roles and functions for NFT rentals, mortgages, and lien rights.",
+      "why_important": "It standardizes NFT leasing and financing so dapps can interoperate without bespoke contracts."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 2981,
+      "title_descriptive": "ERC-2981 is the NFT Royalty Standard that provides a way for NFT contracts to signal royalty payment information. The royaltyInfo function returns a recipient address and payment amount based on the sale price. Marketplaces can query this to determine creator compensation.",
+      "why_important": "Before this standard, every marketplace implemented royalties differently, making it impossible for creators to reliably receive compensation across platforms. While payment remains voluntary, this unified interface enables consistent royalty discovery and helps creators monetize their work."
     },
     {
       "proposal_type": "ERC",
@@ -452,9 +659,57 @@
     },
     {
       "proposal_type": "ERC",
-      "number": 634,
-      "title_descriptive": "ERC-634 adds text record storage to ENS resolvers. Names can associate arbitrary key-value string data through a text(node, key) function. Standard keys include email, url, avatar, and description. Service-specific keys follow reverse domain notation like com.twitter.",
-      "why_important": "ENS is more than just address resolution. Text records turn ENS names into decentralized profiles - linking social accounts, displaying avatars, storing descriptions. This created the foundation for ENS-based identity used by wallets, social apps, and Web3 profiles."
+      "number": 3525,
+      "title_descriptive": "ERC-3525 creates a hybrid token standard combining fungible and non-fungible properties. Each token has a unique ID (like NFTs), belongs to a \"slot\" category, and holds a quantitative value. Tokens in the same slot can transfer value between each other while keeping their individual identities.",
+      "why_important": "This standard bridges a critical gap for financial instruments on-chain. It enables fractional ownership, bonds, vesting schedules, and insurance policies - assets that need both unique identity and divisible value - without requiring complex workarounds using ERC-20 or ERC-721."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 4337,
+      "title_descriptive": "ERC-4337 enables smart contract wallets to replace traditional Ethereum accounts. Users send \"UserOperations\" to a special mempool, where bundlers package them into transactions. This allows wallets to have custom signature schemes, pay gas fees with tokens, enable social recovery, and batch multiple actions into one transaction.",
+      "why_important": "This is the foundation of Account Abstraction on Ethereum. It removes the requirement for users to hold ETH for gas, enables gasless onboarding sponsored by apps, and allows wallets with features like multisig and recovery - all without requiring changes to Ethereum's core protocol."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 4626,
+      "title_descriptive": "ERC-4626 defines a standard API for tokenized vaults representing shares of a single ERC-20 asset, with deposit, mint, withdraw, and redeem flows.",
+      "why_important": "It makes yield-bearing vaults composable across DeFi and simplifies integrations for wallets and protocols."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 5484,
+      "title_descriptive": "ERC-5484 extends ERC-721 to create soulbound tokens that are non-transferable and have immutable burn authorization agreed by issuer and receiver.",
+      "why_important": "It standardizes SBTs for credentials and memberships while allowing controlled revocation."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 6220,
+      "title_descriptive": "ERC-6220 extends ERC-721 with composable NFTs that can equip parts or other NFTs into predefined slots via catalogs.",
+      "why_important": "It enables modular, upgradeable NFTs for games and media with provable digital scarcity."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 6492,
+      "title_descriptive": "A way to verify a signature when the account is a smart contract that has not been deployed yet.",
+      "why_important": "Signatures from ERC-4337 wallets cannot be validated until they are deployed. This means that new wallets can't sign transactions, which is a problem when we want to create a new wallet and start using it. ERC-6492 provides a way to do this. A dapp looks at a smart contract while it has not yet been deployed, simulates it and then gets its valid signature to sign and validate the signature of that contract."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 6900,
+      "title_descriptive": "Interfaces for composable contract accounts optionally supporting upgradability and introspection.",
+      "why_important": "Lays the groundwork for a future of permissionless innovation in modular smart accounts. By standardizing account interfaces and plugins, 6900 seeks to make it easier for developers to build secure, interoperable and composable modular smart accounts and plugins."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 7201,
+      "title_descriptive": "ERC-7201 standardizes how upgradeable and modular contracts organize their storage using namespaces. It defines a formula to derive collision-free storage locations from identifiers, allowing different contract modules to maintain independent storage spaces.",
+      "why_important": "Upgradeable contracts and diamond patterns need to coordinate storage across multiple code modules. This standard prevents storage collisions, makes contracts safer to upgrade, and enables tooling like block explorers to properly interpret contract state."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 7513,
+      "title_descriptive": "ERC-7513 defines 'Smart NFTs' - NFTs that contain executable smart contract logic. A Smart-NFT has execute() and validatePermission() functions, registered through a Smart-Manager that handles verification states. An Intent-Proxy enables batch execution of multiple Smart-NFTs in one transaction.",
+      "why_important": "This creates NFTs as crypto-native assets representing on-chain code rather than external assets. Users can own and trade access to specific smart contract functionality, enable permissionless automation, and compose multiple contract interactions into simplified intent-based operations."
     },
     {
       "proposal_type": "ERC",
@@ -464,9 +719,63 @@
     },
     {
       "proposal_type": "ERC",
+      "number": 7521,
+      "title_descriptive": "ERC-7521 creates a generalized intent specification for smart contract wallets. Users sign UserIntent messages containing segments that reference different intent standard contracts. Solvers combine these into IntentSolutions, handling execution order and cross-intent dependencies through a trusted entry point.",
+      "why_important": "Instead of smart contract wallets constantly upgrading for new intent formats, this single entry point handles signature verification while delegating intent interpretation to modular standard contracts. Users can adopt new intent standards just by signing messages that reference them."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 7540,
+      "title_descriptive": "ERC-7540 extends ERC-4626 with asynchronous deposit and redemption request flows (pending, claimable, claimed).",
+      "why_important": "It enables ERC-4626 vaults for real-world assets, cross-chain, or delayed settlement while staying composable."
+    },
+    {
+      "proposal_type": "ERC",
       "number": 7555,
       "title_descriptive": "ERC-7555 defines a Single Sign-On protocol for discovering smart accounts across applications. Apps redirect users to provider URIs for authentication. Providers return smart account addresses and can handle transaction signing. This works with passkeys and other non-secp256k1 signers.",
       "why_important": "Alternative signers like passkeys generate unique keys per domain, fragmenting user accounts across apps. This standard lets authentication providers maintain consistent account discovery, so users get the same smart account address regardless of which app they're using."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 7562,
+      "title_descriptive": "ERC-7562 defines the validation rules that Account Abstraction bundlers must enforce when processing UserOperations. It specifies which opcodes are allowed, how storage access is limited, and how to prevent denial-of-service attacks through a reputation system for paymasters and factories.",
+      "why_important": "Without these rules, malicious actors could flood the mempool with UserOperations that seem valid but fail on-chain, wasting bundlers' resources. This standard ensures the ERC-4337 ecosystem remains secure and DoS-resistant while allowing legitimate flexibility."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 7575,
+      "title_descriptive": "ERC-7575 adapts ERC-4626 for multi-asset vaults and external share tokens by adding share() and share-to-vault lookup.",
+      "why_important": "It lets LP or multi-asset vaults use standardized interfaces without forcing the vault itself to be an ERC-20."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 7579,
+      "title_descriptive": "ERC-7579 defines minimal interfaces for modular smart accounts and their modules. It specifies execution, configuration, and fallback behaviors, plus module types including validators, executors, fallback handlers, and hooks. Accounts can install and uninstall modules dynamically.",
+      "why_important": "Smart account implementations are fragmenting into incompatible ecosystems. This standard ensures modules work across different account implementations, preventing vendor lock-in. Developers build once, users choose their preferred account without losing access to the module ecosystem."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 7662,
+      "title_descriptive": "ERC-7662 standardizes NFTs that represent AI agents. Each NFT stores agent name, AI model specification (GPT-4, Claude, etc.), and URIs pointing to system/user prompts. Prompt URIs can be encrypted so only NFT holders can decrypt and use the agent's configuration.",
+      "why_important": "AI agent creation is valuable intellectual property. This standard enables creators to trade and monetize their agent configurations on-chain while protecting prompt secrets through encryption. It opens a new market for AI agents as tradeable, collectible assets."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 7677,
+      "title_descriptive": "A way for apps to communicate with smart wallets about paymaster web services.",
+      "why_important": "ERC-7677 proposes an EIP-5792-compliant capability for paymaster web service communication by proposing a standardized communication protocol for wallets and ERC-4337 paymaster web services. This ultimately unlocks the ability for app developers to sponsor their users' transactions."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 7679,
+      "title_descriptive": "Construct UserOperations without being coupled with account-specific logic.",
+      "why_important": "Allows a dapp to send UserOps even when the wallet isn\u2019t connected, enabling use cases that were not possible before, e.g. subscriptions."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 7710,
+      "title_descriptive": "ERC-7710 standardizes how smart contracts delegate capabilities to other contracts or EOAs. A DelegationManager contract validates delegation authority and calls the delegator to execute actions. It uses ERC-7579's execution interface for flexible call types including batches and delegatecalls.",
+      "why_important": "This enables persistent delegated permissions through a single signature - creating long-lived sessions with dApps, granting bounded permissions to AI agents, or sharing invite links with specific capabilities. Users sign once for ongoing access within defined constraints."
     },
     {
       "proposal_type": "ERC",
@@ -479,6 +788,12 @@
       "number": 7726,
       "title_descriptive": "ERC-7726 standardizes a Common Quote Oracle interface for asset valuation. The getQuote(baseAmount, base, quote) function returns how much quote token equals the specified base amount. Unlike price feeds that return ratios, this works directly with token amounts.",
       "why_important": "Every DeFi protocol builds adapters for different oracle formats. A unified interface means one integration works across Chainlink, Uniswap TWAP, or custom feeds. The amount-based API eliminates decimal handling errors that have caused millions in losses."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 7746,
+      "title_descriptive": "ERC-7746 defines an ILayer interface for composable security middleware. Layers implement beforeCall() and afterCall() hooks that wrap contract function execution. Protected contracts call these hooks before and after their logic, reverting if any layer fails validation.",
+      "why_important": "Security checks are often tightly coupled with business logic. This middleware pattern allows independent security providers to build reusable protections - rate limiting, access control, output verification - that can be composed and upgraded without modifying the protected contracts."
     },
     {
       "proposal_type": "ERC",
@@ -500,9 +815,39 @@
     },
     {
       "proposal_type": "ERC",
+      "number": 7795,
+      "title_descriptive": "ERC-7795 extends wallet_sendCalls to let dApps specify token prerequisites for transactions. Wallets can be told that users need minimum ERC-20 balances, ERC-721 ownership, or ERC-1155 holdings before executing. The wallet then helps users meet these requirements automatically.",
+      "why_important": "Users often have funds on different chains than where the dApp operates. This standard lets wallets bridge, swap, or consolidate assets automatically before the main transaction. The user experience becomes 'I want to do X' rather than 'First bridge, then swap, then approve, then...'."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 7803,
+      "title_descriptive": "ERC-7803 extends EIP-712 typed data signing to better support smart contract accounts. It introduces \"signing domains\" to prevent replay attacks when the same key controls multiple accounts, and allows dapps to specify which signature authentication methods their contracts support.",
+      "why_important": "As smart contract wallets become common, the same signing key may control multiple accounts. This standard ensures signatures are bound to specific accounts, preventing replay attacks, and helps wallets display accurate signing context to users."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 7811,
+      "title_descriptive": "ERC-7811 introduces wallet_getAssets, a JSON-RPC method for wallets to report a user's complete asset holdings to dApps. Wallets return balances across chains and asset types (native, ERC-20, ERC-721), including assets not easily discoverable through on-chain indexing alone.",
+      "why_important": "Dapps currently guess user balances from on-chain data, missing cross-chain assets or restricting actions the wallet could actually complete. This lets wallets share their knowledge of user holdings, enabling smarter UX that accounts for total available assets rather than just current-chain balances."
+    },
+    {
+      "proposal_type": "ERC",
       "number": 7812,
       "title_descriptive": "ERC-7812 creates a singleton registry for storing zero-knowledge provable statements. The EvidenceRegistry contract at a fixed address lets any registrar store commitments to private data. Users can later prove statements about their data via ZK proofs without revealing the data itself.",
       "why_important": "Every ZK identity project builds its own registry, fragmenting the ecosystem. A shared singleton means proofs from one application work in others. Passport verification, credential attestations, and reputation systems can all anchor to one universal, auditable registry."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 7818,
+      "title_descriptive": "ERC-7818 extends ERC-20 with token expiration based on epochs. Epochs can be block-based or time-based, and tokens track which epoch they were minted in. Transfers automatically use tokens closest to expiration (FIFO), and balanceOf returns only non-expired tokens.",
+      "why_important": "Many real-world assets have time limits: loyalty points, prepaid credits, bonds with maturity dates, game items with seasons. This standard enables expirable tokens on-chain without complex off-chain tracking, opening use cases from telecom data packages to closed-loop payment systems."
+    },
+    {
+      "proposal_type": "ERC",
+      "number": 7820,
+      "title_descriptive": "ERC-7820 creates a centralized Access Control Registry for managing roles across multiple smart contracts. Contracts register with an admin, who can then grant and revoke roles for any account. Batch operations allow managing roles across multiple contracts and accounts in one transaction.",
+      "why_important": "As protocols grow, managing access control across dozens of contracts becomes unwieldy. A shared registry reduces redundancy, provides consistent role management, and makes auditing easier. Protocols can query a single source of truth for permissions across their entire system."
     },
     {
       "proposal_type": "ERC",
@@ -512,8 +857,14 @@
     },
     {
       "proposal_type": "ERC",
+      "number": 7858,
+      "title_descriptive": "ERC-7858 adds time- or block-based expiration to ERC-721 NFTs and SBTs with standard query interfaces.",
+      "why_important": "It supports time-limited assets like tickets and memberships while remaining compatible with existing NFT tooling."
+    },
+    {
+      "proposal_type": "ERC",
       "number": 7887,
-      "title_descriptive": "ERC-7887 extends ERC-7540 asynchronous vaults with cancelation flows. Users can cancel pending deposit or redeem requests through a multi-step process: request cancelation, wait for fulfillment, then claim returned assets. Cancelation follows the same Pending→Claimable→Claimed lifecycle as deposits.",
+      "title_descriptive": "ERC-7887 extends ERC-7540 asynchronous vaults with cancelation flows. Users can cancel pending deposit or redeem requests through a multi-step process: request cancelation, wait for fulfillment, then claim returned assets. Cancelation follows the same Pending\u2192Claimable\u2192Claimed lifecycle as deposits.",
       "why_important": "Async vaults for real-world assets can lock funds for extended periods. Without cancelation, users have no exit if their circumstances change. This standard provides a safe, standardized way to back out of pending vault operations without disrupting vault accounting."
     },
     {
@@ -533,6 +884,24 @@
       "number": 7560,
       "title_descriptive": "RIP-7560 brings Native Account Abstraction to rollups at the protocol level. It splits transactions into validation and execution phases, allowing smart contract accounts to authorize transactions and pay gas. Paymasters can sponsor gas, and the transaction format is ERC-4337 compatible.",
       "why_important": "ERC-4337 works today but has ~42k gas overhead and relies on bundler infrastructure. Native AA integrates account abstraction into the protocol itself, reducing overhead to ~15k gas, enabling censorship resistance via crLists, and making tx.origin meaningful for smart accounts."
+    },
+    {
+      "proposal_type": "RIP",
+      "number": 7712,
+      "title_descriptive": "RIP-7712 replaces sequential nonces with a two-dimensional nonce system for RIP-7560 transactions. Smart contract accounts can use different nonce keys for independent transaction streams, allowing parallel operations without coordination. The NonceManager precompile validates and increments nonces on-chain.",
+      "why_important": "Sequential nonces force multi-user smart accounts to coordinate all transactions. With 2D nonces, different signers or operations can proceed independently. This is essential for smart accounts operated by multiple parties or with separate workflows like configuration vs. regular transactions."
+    },
+    {
+      "proposal_type": "RIP",
+      "number": 7755,
+      "title_descriptive": "RIP-7755 standardizes trustless cross-L2 calls using storage proofs. Users post requests with rewards to an Outbox contract, fulfillers execute on the destination chain's Inbox, and claim rewards by proving execution via storage proofs that leverage L1 as a shared settlement layer.",
+      "why_important": "Current cross-chain solutions rely on centralized relayers or external protocols. Since all L2s post state to Ethereum, any L2 can verify any other L2's state through L1. This creates a decentralized, permissionless utility for cross-chain calls with cryptographic proof of execution."
+    },
+    {
+      "proposal_type": "RIP",
+      "number": 7810,
+      "title_descriptive": "RIP-7810 defines the purpose and guidelines for Rollup Improvement Proposals. Similar to EIPs, RIPs provide specification documents for rollup features and processes. They go through Draft, Review, and Final stages, with coordination through Rollcall meetings and the Ethereum Magicians forum.",
+      "why_important": "As rollups proliferate, they need shared standards for interoperability without every team independently solving the same problems. RIPs provide a coordination mechanism for rollups to adopt common features, reducing fragmentation while allowing rollup-specific innovations."
     }
   ]
 }

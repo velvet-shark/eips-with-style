@@ -1,7 +1,8 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { createClient } from "@/utils/supabase/client";
+import { useConvex } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { ProposalShort } from "@/lib/types";
 import { getPopularProposals } from "@/lib/view-tracker";
 
@@ -40,42 +41,11 @@ export const ProposalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [featuredProposals, setFeaturedProposals] = useState<ProposalShort[]>([]);
   const [allProposals, setAllProposals] = useState<ProposalShort[]>([]);
   const [popularProposals, setPopularProposals] = useState<ProposalShort[]>([]);
+  const convex = useConvex();
 
   useEffect(() => {
-    // Supabase/PostgREST returns at most 1 000 rows per request.
-    // Page through the table so we always get every proposal.
-    const fetchFromSupabase = async (): Promise<ProposalShort[]> => {
-      const PAGE_SIZE = 1000;
-      const supabase = createClient();
-      let offset = 0;
-      let rows: ProposalShort[] = [];
-
-      /* eslint-disable no-await-in-loop */
-      while (true) {
-        const { data, error } = await supabase
-          .from("proposals")
-          .select("id, proposal_type, number, slug, title, featured, created_at")
-          .order("created_at", { ascending: false })
-          .range(offset, offset + PAGE_SIZE - 1);
-
-        if (error) {
-          console.error("Supabase fetch error:", error);
-          break;
-        }
-
-        if (data) {
-          rows = rows.concat(data);
-        }
-
-        if (!data || data.length < PAGE_SIZE) {
-          // Fetched the final page
-          break;
-        }
-
-        offset += PAGE_SIZE;
-      }
-
-      return rows;
+    const fetchFromConvex = async (): Promise<ProposalShort[]> => {
+      return convex.query(api.proposals.listAllProposals);
     };
 
     const loadProposals = async () => {
@@ -104,7 +74,7 @@ export const ProposalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
         // Fetch fresh if no cache or cache is stale
         if (!useCached) {
-          const freshData = await fetchFromSupabase();
+          const freshData = await fetchFromConvex();
           setAllProposals(freshData);
           setFeaturedProposals(freshData.filter((p) => p.featured));
           const payload: AllProposalsCache = { timestamp: now, data: freshData };
@@ -117,7 +87,7 @@ export const ProposalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     };
 
     loadProposals();
-  }, []);
+  }, [convex]);
 
   useEffect(() => {
     const loadPopularProposals = async () => {

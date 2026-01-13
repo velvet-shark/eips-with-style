@@ -5,7 +5,13 @@
 
 > **All your EIPs, ERCs, CAIPs, and RIPs in one place.**
 
-EIP.directory is an open-source web application that aggregates and presents Ethereum-related improvement proposals in a clean, searchable interface. Visit at [eip.directory](https://eip.directory).
+EIP.directory is an open-source web application that aggregates Ethereum-related improvement proposals and presents them in a clean, searchable interface. The live site is at [eip.directory](https://eip.directory).
+
+## 🧭 What this project is
+
+- A public, read-only index of Ethereum improvement proposals (EIPs, ERCs, CAIPs, RIPs)
+- A structured ingestion pipeline that pulls proposals from GitHub, normalizes metadata, and stores them in Convex
+- A Next.js UI that preserves the current UX while adding enrichment copy ("In simple terms" / "Why is it important?")
 
 ## 🚀 Features
 
@@ -22,13 +28,23 @@ EIP.directory is an open-source web application that aggregates and presents Eth
 
 - **Smart Search**: Fast, intuitive search across all proposals
 
-- **Real-time Updates**: Automated synchronization with upstream repositories
+- **Automated Updates**: Syncs with upstream GitHub repositories via ingestion scripts
+
+## 🧬 How it works (high level)
+
+```
+GitHub Repos → scripts/ingest_proposals.ts → Convex → Next.js UI
+```
+
+- Ingestion pulls markdown via GitHub’s Contents API, parses YAML front matter, normalizes links/authors, and upserts into Convex.
+- Enrichments are applied separately (script or admin UI) and never overwritten by ingestion.
+- View events are recorded for analytics and popular proposals are computed on a schedule from those logs.
 
 ## 🛠 Tech Stack
 
 ### Frontend
 
-- **Next.js 14** - React framework with App Router
+- **Next.js 15** - React framework with App Router
 - **TypeScript** - Type safety
 - **Tailwind CSS** - Styling
 - **Radix UI** - Component primitives
@@ -37,8 +53,8 @@ EIP.directory is an open-source web application that aggregates and presents Eth
 
 ### Backend
 
-- **Python** - Proposal fetching and processing
-- **Supabase** - Database and authentication
+- **Convex** - Database + admin enrichment workflow (Convex Auth)
+- **TypeScript** - Proposal ingestion/enrichment scripts
 - **GitHub API** - Source of truth for proposals
 
 ## 🏃‍♂️ Quick Start
@@ -46,8 +62,7 @@ EIP.directory is an open-source web application that aggregates and presents Eth
 ### Prerequisites
 
 - Node.js 18+ and npm
-- Python 3.8+
-- Supabase account (for database)
+- Convex account or local Convex dev deployment
 
 ### Installation
 
@@ -64,27 +79,23 @@ EIP.directory is an open-source web application that aggregates and presents Eth
    npm install
    ```
 
-3. **Set up Python environment**
-
-   ```bash
-   cd backend
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   pip install -r requirements.txt
-   ```
-
-4. **Configure environment variables**
+3. **Configure environment variables**
 
    ```bash
    # Frontend (.env.local)
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
    NEXT_PUBLIC_SITE_URL=http://localhost:3000
-
-   # Backend (.env)
-   SUPABASE_URL=your_supabase_url
-   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+   NEXT_PUBLIC_CONVEX_URL=your_convex_deployment_url
+   # Optional for server-side fetches (Convex also writes this when running `npx convex dev`)
+   CONVEX_URL=your_convex_deployment_url
    ```
+
+4. **Run Convex locally (required for data + admin UI)**
+
+   ```bash
+   npx convex dev
+   ```
+
+   This writes `CONVEX_URL` into `.env.local` automatically.
 
 5. **Run the development server**
    ```bash
@@ -98,9 +109,15 @@ The application will be available at `http://localhost:3000`.
 To fetch and update proposals from GitHub:
 
 ```bash
-cd backend
-source venv/bin/activate
-python proposal_updater.py
+npx tsx scripts/ingest_proposals.ts
+```
+
+### Applying Enrichments
+
+To update "In simple terms" and "Why is it important?" copy from `backend/enrichments.json`:
+
+```bash
+npx tsx scripts/enrich_proposals.ts backend/enrichments.json
 ```
 
 ## 📁 Project Structure
@@ -108,20 +125,24 @@ python proposal_updater.py
 ```
 ├── app/                    # Next.js app directory
 │   ├── [proposalType]/     # Dynamic routes for proposal types
-│   ├── api/                # API routes
-│   └── auth/               # Authentication pages
-├── backend/                # Python proposal updater
-│   ├── proposal_updater.py # Main update script
+│   └── api/                # API routes
+├── backend/                # Cached proposal files + enrichments
 │   └── downloaded_proposals/ # Cached proposal files
 ├── components/             # React components
+├── convex/                 # Convex schema, queries, mutations, auth, cron jobs
 ├── config/                 # Configuration files
 ├── contexts/              # React contexts
 ├── database/              # Database schema
 ├── hooks/                 # Custom React hooks
 ├── lib/                   # Utility libraries
 ├── public/                # Static assets
+├── scripts/               # Ingestion + enrichment tooling
 └── utils/                 # Helper functions
 ```
+
+## 🗺️ Sitemap
+
+`/sitemap.xml` is generated by the Next.js App Router route in `app/sitemap.ts`. There are no static sitemap files in `public/`.
 
 ## 🤝 Contributing
 
