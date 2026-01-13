@@ -112,6 +112,10 @@ To fetch and update proposals from GitHub:
 npx tsx scripts/ingest_proposals.ts
 ```
 
+Automated daily updates run via GitHub Actions (`.github/workflows/update-proposals.yml`). Configure repository secrets:
+- `CONVEX_URL` (production Convex deployment URL)
+- `GITHUB_TOKEN` (optional, for higher GitHub API rate limits)
+
 ### Applying Enrichments
 
 To update "In simple terms" and "Why is it important?" copy from `backend/enrichments.json`:

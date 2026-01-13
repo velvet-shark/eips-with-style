@@ -42,6 +42,8 @@ GitHub Repos → scripts/ingest_proposals.ts → Convex → Admin Enrichment UI
 2. **ProposalProvider** (`contexts/ProposalContext.tsx`): Client-side context that fetches all proposals from Convex with 12-hour localStorage caching.
 3. **View Tracking** (`lib/view-tracker.ts`): Logs proposal views to `proposal_views` via Convex. Popular proposals read from the Convex cache.
 
+Automated ingestion runs daily via GitHub Actions (`.github/workflows/update-proposals.yml`) and requires the `CONVEX_URL` secret (and optional `GITHUB_TOKEN` for rate limits).
+
 ### Key Routes
 
 - `/` - Home page with search and featured proposals

@@ -40,3 +40,4 @@ npx tsx scripts/enrich_proposals.ts backend/enrichments.json --dry-run
 - Convex Auth config (GitHub OAuth + JWT keys) lives in the Convex deployment env via `npx convex env set` or the dashboard.
 - Data flows GitHub → `scripts/ingest_proposals.ts` → Convex → Next.js frontend + admin/enrichment workflow.
 - `/sitemap.xml` is served by `app/sitemap.ts`; do not add static sitemap files in `public/`.
+- GitHub Actions (`.github/workflows/update-proposals.yml`) runs daily ingestion; set `CONVEX_URL` (required) and `GITHUB_TOKEN` (optional) as repo secrets.
