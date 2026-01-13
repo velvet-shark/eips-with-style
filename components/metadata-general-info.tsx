@@ -13,7 +13,7 @@ import {
 type StatusType = keyof typeof statusConfig;
 
 interface MetadataGeneralInfoProps {
-  status: StatusType;
+  status?: string;
   type: string;
   category: string;
   createdAt: string;
@@ -41,11 +41,12 @@ const formatDate = (dateString: string): string => {
 };
 
 const MetadataGeneralInfo: React.FC<MetadataGeneralInfoProps> = ({ status, type, category, createdAt }) => {
-  const { color, icon } = statusConfig[status as StatusType] || defaultStatus;
+  const statusLabel = status?.trim() || "Unknown";
+  const { color, icon } = statusConfig[statusLabel as StatusType] || defaultStatus;
 
   return (
     <div className="flex flex-wrap gap-2">
-      <MetadataBadge color={color} icon={icon} content={`Status: ${status}`} />
+      <MetadataBadge color={color} icon={icon} content={`Status: ${statusLabel}`} />
       <MetadataBadge
         color="bg-green-100 text-green-800"
         icon={FolderIcon}

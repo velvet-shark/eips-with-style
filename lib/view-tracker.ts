@@ -1,21 +1,22 @@
-import { createClient } from "@/utils/supabase/client";
+import { ConvexHttpClient } from "convex/browser";
+import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
+
+const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
+const convex = convexUrl ? new ConvexHttpClient(convexUrl) : null;
 
 export async function trackProposalView(proposalId: string) {
-  const supabase = createClient();
-
   try {
-    // Get user's IP (in a real app, you'd get this from headers)
+    if (!convex) {
+      console.error("NEXT_PUBLIC_CONVEX_URL is missing; cannot track proposal views.");
+      return;
+    }
     const userAgent = navigator.userAgent;
 
-    const { error } = await supabase.from("view_logs").insert({
-      proposal_id: proposalId,
-      user_agent: userAgent,
-      viewed_at: new Date().toISOString()
+    await convex.mutation(api.views.trackView, {
+      proposalId: proposalId as Id<"proposals">,
+      userAgent
     });
-
-    if (error) {
-      console.error("Error tracking view:", error);
-    }
   } catch (error) {
     console.error("Error tracking view:", error);
   }

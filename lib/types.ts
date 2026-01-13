@@ -27,7 +27,7 @@ interface Proposal {
   official_url: string;
   links: string[];
   why_important: string;
-  requires: string;
+  requires: string[];
   description: string;
   discussion_url: string;
   featured: boolean;

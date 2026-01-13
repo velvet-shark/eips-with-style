@@ -1,9 +1,11 @@
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import ConvexAuthProvider from "@/components/providers/convex-auth-provider";
 import { SearchCommand } from "@/components/search-command";
 import { siteConfig } from "@/config/site";
 import { ProposalProvider } from "@/contexts/ProposalContext";
 import PlausibleProvider from "next-plausible";
+import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 
 export const metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -35,18 +37,22 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         />
       </head>
       <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-          storageKey="website-theme"
-        >
-          <ProposalProvider>
-            <SearchCommand />
-            {children}
-          </ProposalProvider>
-        </ThemeProvider>
+        <ConvexAuthNextjsServerProvider>
+          <ConvexAuthProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+              storageKey="website-theme"
+            >
+              <ProposalProvider>
+                <SearchCommand />
+                {children}
+              </ProposalProvider>
+            </ThemeProvider>
+          </ConvexAuthProvider>
+        </ConvexAuthNextjsServerProvider>
       </body>
     </html>
   );
