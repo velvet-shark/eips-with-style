@@ -6,8 +6,6 @@ type ProposalDoc = {
   title: string;
   featured?: boolean;
   created_at?: string;
-  description?: string;
-  content?: string;
   status?: string;
   type?: string;
   category?: string;
@@ -39,7 +37,12 @@ export function toProposalShort(doc: ProposalDoc, view_count?: number) {
   };
 }
 
-export function toProposalDetail(doc: ProposalDoc) {
+type ProposalContentDoc = {
+  content?: string;
+  description?: string;
+};
+
+export function toProposalDetail(doc: ProposalDoc, contentDoc?: ProposalContentDoc) {
   return {
     id: doc._id,
     proposal_type: doc.proposal_type,
@@ -48,7 +51,7 @@ export function toProposalDetail(doc: ProposalDoc) {
     category: doc.category ?? "",
     title: doc.title,
     title_descriptive: doc.title_descriptive ?? "",
-    content: doc.content ?? "",
+    content: contentDoc?.content ?? "",
     status: doc.status ?? "",
     type: doc.type ?? "",
     authors: doc.authors ?? "",
@@ -59,7 +62,7 @@ export function toProposalDetail(doc: ProposalDoc) {
     links: doc.links ?? [],
     why_important: doc.why_important ?? "",
     requires: doc.requires ?? [],
-    description: doc.description ?? "",
+    description: contentDoc?.description ?? "",
     discussion_url: doc.discussion_url ?? "",
     featured: Boolean(doc.featured)
   };

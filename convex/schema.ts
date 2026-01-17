@@ -9,8 +9,6 @@ export default defineSchema({
     number: v.number(),
     slug: v.string(),
     title: v.string(),
-    description: v.optional(v.string()),
-    content: v.optional(v.string()),
     status: v.optional(v.string()),
     type: v.optional(v.string()),
     category: v.optional(v.string()),
@@ -33,6 +31,17 @@ export default defineSchema({
     .index("by_slug_type", ["slug", "proposal_type"])
     .index("by_type_number", ["proposal_type", "number"])
     .index("by_created_at", ["created_at"]),
+  proposal_contents: defineTable({
+    proposalId: v.id("proposals"),
+    content: v.optional(v.string()),
+    description: v.optional(v.string())
+  }).index("by_proposal", ["proposalId"]),
+  proposal_meta: defineTable({
+    proposal_type: v.string(),
+    number: v.number(),
+    proposalId: v.id("proposals"),
+    sha: v.optional(v.string())
+  }).index("by_type_number", ["proposal_type", "number"]),
   proposal_views: defineTable({
     proposalId: v.id("proposals"),
     viewed_at: v.number(),

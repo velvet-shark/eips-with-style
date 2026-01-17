@@ -9,7 +9,7 @@ import LinkItem from "@/components/link-item";
 import MetadataGeneralInfo from "@/components/metadata-general-info";
 import { replaceImageUrls } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
-import { Suspense } from "react";
+import { Suspense, cache } from "react";
 import Loading from "@/app/loading";
 import ViewTracker from "@/components/view-tracker";
 import { fetchQuery } from "convex/nextjs";
@@ -32,12 +32,16 @@ const normalizeProposalType = (value: string) => {
   return trimmed.toLowerCase().endsWith("s") ? trimmed.slice(0, -1).toUpperCase() : trimmed.toUpperCase();
 };
 
-export async function generateMetadata({ params }: Props, parent: ResolvingMetadata): Promise<Metadata> {
-  const { proposalType, slug } = await params;
-  const proposal = await fetchQuery(api.proposals.getProposalBySlugType, {
+const getProposalBySlugType = cache(async (proposalType: string, slug: string) => {
+  return fetchQuery(api.proposals.getProposalBySlugType, {
     slug,
     proposal_type: normalizeProposalType(proposalType)
   });
+});
+
+export async function generateMetadata({ params }: Props, parent: ResolvingMetadata): Promise<Metadata> {
+  const { proposalType, slug } = await params;
+  const proposal = await getProposalBySlugType(proposalType, slug);
 
   if (!proposal) {
     return {
@@ -93,10 +97,7 @@ async function ProposalContent({ params }: { params: { proposalType: string; slu
   const { proposalType, slug } = params;
 
   async function checkProposal(type: string, proposalSlug: string) {
-    return fetchQuery(api.proposals.getProposalBySlugType, {
-      slug: proposalSlug,
-      proposal_type: normalizeProposalType(type)
-    });
+    return getProposalBySlugType(type, proposalSlug);
   }
 
   let proposal = await checkProposal(proposalType, slug);

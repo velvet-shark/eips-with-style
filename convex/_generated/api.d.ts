@@ -12,6 +12,7 @@ import type * as auth from "../auth.js";
 import type * as crons from "../crons.js";
 import type * as enrichments from "../enrichments.js";
 import type * as http from "../http.js";
+import type * as migrations from "../migrations.js";
 import type * as popular from "../popular.js";
 import type * as proposal_utils from "../proposal_utils.js";
 import type * as proposals from "../proposals.js";
@@ -29,6 +30,7 @@ declare const fullApi: ApiFromModules<{
   crons: typeof crons;
   enrichments: typeof enrichments;
   http: typeof http;
+  migrations: typeof migrations;
   popular: typeof popular;
   proposal_utils: typeof proposal_utils;
   proposals: typeof proposals;

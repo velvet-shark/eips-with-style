@@ -3,6 +3,8 @@ import { fetchQuery } from "convex/nextjs";
 import type { FunctionReturnType } from "convex/server";
 import { api } from "@/convex/_generated/api";
 
+export const revalidate = 86400;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://eip.directory";
   const proposalUrls: MetadataRoute.Sitemap = [];
