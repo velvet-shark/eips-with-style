@@ -100,6 +100,31 @@ export const listProposalsForSitemapPage = query({
   }
 });
 
+export const listProposalMetaPage = query({
+  args: {
+    cursor: v.optional(v.union(v.string(), v.null())),
+    limit: v.optional(v.number())
+  },
+  handler: async (ctx, args) => {
+    const limit = Math.min(Math.max(args.limit ?? 200, 1), 1000);
+    const cursor = args.cursor ?? null;
+    const results = await ctx.db.query("proposal_meta").paginate({
+      cursor,
+      numItems: limit
+    });
+
+    return {
+      ...results,
+      page: results.page.map((meta) => ({
+        proposal_type: meta.proposal_type,
+        number: meta.number,
+        sha: meta.sha ?? null,
+        id: meta.proposalId
+      }))
+    };
+  }
+});
+
 export const getProposalIngestionInfo = query({
   args: {
     proposal_type: v.string(),

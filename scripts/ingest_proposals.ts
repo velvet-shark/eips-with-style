@@ -57,6 +57,19 @@ type ExistingProposalInfo = {
   sha?: string | null;
 };
 
+type ProposalMetaEntry = {
+  proposal_type: ProposalType;
+  number: number;
+  sha?: string | null;
+  id: string;
+};
+
+type ProposalMetaPage = {
+  page: ProposalMetaEntry[];
+  isDone: boolean;
+  continueCursor: string | null;
+};
+
 type GitHubFile = {
   name: string;
   path: string;
@@ -452,7 +465,41 @@ async function downloadFile(url: string, token?: string): Promise<string> {
   return await response.text();
 }
 
-async function ingestRepo(config: RepoConfig, options: ParsedArgs, client: ConvexHttpClient, report: IngestionReport, token?: string) {
+const buildMetaKey = (proposalType: ProposalType, number: number) => `${proposalType}-${number}`;
+
+async function loadProposalMetaMap(client: ConvexHttpClient) {
+  const metaMap = new Map<string, ExistingProposalInfo>();
+  let cursor: string | null = null;
+  let done = false;
+
+  while (!done) {
+    const page = (await client.query(api.proposals.listProposalMetaPage, {
+      cursor,
+      limit: 500
+    })) as ProposalMetaPage;
+
+    page.page.forEach((meta) => {
+      metaMap.set(buildMetaKey(meta.proposal_type, meta.number), {
+        id: meta.id,
+        sha: meta.sha ?? null
+      });
+    });
+
+    done = page.isDone;
+    cursor = page.continueCursor ?? null;
+  }
+
+  return metaMap;
+}
+
+async function ingestRepo(
+  config: RepoConfig,
+  options: ParsedArgs,
+  client: ConvexHttpClient,
+  report: IngestionReport,
+  metaMap: Map<string, ExistingProposalInfo>,
+  token?: string
+) {
   const repoCounts = report.byType[config.proposalType];
   console.log(`\nProcessing ${config.proposalType} proposals from ${config.repo}/${config.contentsPath}`);
 
@@ -475,10 +522,7 @@ async function ingestRepo(config: RepoConfig, options: ParsedArgs, client: Conve
     try {
       const filenameNumber = extractNumberFromFilename(file.name);
       let existingInfo: ExistingProposalInfo | null = filenameNumber
-        ? await client.query(api.proposals.getProposalIngestionInfo, {
-            proposal_type: config.proposalType,
-            number: filenameNumber
-          })
+        ? metaMap.get(buildMetaKey(config.proposalType, filenameNumber)) ?? null
         : null;
 
       if (!options.download && existingInfo?.sha && existingInfo.sha === file.sha) {
@@ -526,10 +570,7 @@ async function ingestRepo(config: RepoConfig, options: ParsedArgs, client: Conve
       }
 
       if (!existingInfo || (filenameNumber && proposalNumber !== filenameNumber)) {
-        existingInfo = await client.query(api.proposals.getProposalIngestionInfo, {
-          proposal_type: config.proposalType,
-          number: proposalNumber
-        });
+        existingInfo = metaMap.get(buildMetaKey(config.proposalType, proposalNumber)) ?? null;
       }
 
       const statusValue = extractString(metadata, ["status"]);
@@ -588,8 +629,13 @@ async function ingestRepo(config: RepoConfig, options: ParsedArgs, client: Conve
         })
       };
 
-      await client.mutation(api.proposals.upsertProposal, {
+      const proposalId = await client.mutation(api.proposals.upsertProposal, {
         proposal: proposalPayload
+      });
+
+      metaMap.set(buildMetaKey(config.proposalType, proposalNumber), {
+        id: proposalId as string,
+        sha: file.sha
       });
 
       const wasExisting = Boolean(existingInfo?.id);
@@ -627,6 +673,8 @@ async function main() {
 
     const token = process.env.GITHUB_TOKEN;
     const client = new ConvexHttpClient(convexUrl);
+    const metaMap = await loadProposalMetaMap(client);
+    console.log(`Loaded ${metaMap.size} proposal metadata entries from Convex.`);
 
     const report: IngestionReport = {
       startedAt: new Date().toISOString(),
@@ -649,7 +697,7 @@ async function main() {
     await ensureDir(options.reportDir);
 
     for (const repo of targetRepos) {
-      await ingestRepo(repo, options, client, report, token);
+      await ingestRepo(repo, options, client, report, metaMap, token);
     }
 
     report.finishedAt = new Date().toISOString();
