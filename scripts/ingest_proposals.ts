@@ -492,12 +492,22 @@ async function loadProposalMetaMap(client: ConvexHttpClient) {
   return metaMap;
 }
 
+async function tryLoadProposalMetaMap(client: ConvexHttpClient) {
+  try {
+    return await loadProposalMetaMap(client);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.warn(`Failed to load proposal metadata; falling back to per-item checks. (${message})`);
+    return null;
+  }
+}
+
 async function ingestRepo(
   config: RepoConfig,
   options: ParsedArgs,
   client: ConvexHttpClient,
   report: IngestionReport,
-  metaMap: Map<string, ExistingProposalInfo>,
+  metaMap: Map<string, ExistingProposalInfo> | null,
   token?: string
 ) {
   const repoCounts = report.byType[config.proposalType];
@@ -521,9 +531,18 @@ async function ingestRepo(
 
     try {
       const filenameNumber = extractNumberFromFilename(file.name);
-      let existingInfo: ExistingProposalInfo | null = filenameNumber
-        ? metaMap.get(buildMetaKey(config.proposalType, filenameNumber)) ?? null
-        : null;
+      let existingInfo: ExistingProposalInfo | null = null;
+
+      if (filenameNumber) {
+        if (metaMap) {
+          existingInfo = metaMap.get(buildMetaKey(config.proposalType, filenameNumber)) ?? null;
+        } else {
+          existingInfo = await client.query(api.proposals.getProposalIngestionInfo, {
+            proposal_type: config.proposalType,
+            number: filenameNumber
+          });
+        }
+      }
 
       if (!options.download && existingInfo?.sha && existingInfo.sha === file.sha) {
         repoCounts.skipped += 1;
@@ -570,7 +589,14 @@ async function ingestRepo(
       }
 
       if (!existingInfo || (filenameNumber && proposalNumber !== filenameNumber)) {
-        existingInfo = metaMap.get(buildMetaKey(config.proposalType, proposalNumber)) ?? null;
+        if (metaMap) {
+          existingInfo = metaMap.get(buildMetaKey(config.proposalType, proposalNumber)) ?? null;
+        } else {
+          existingInfo = await client.query(api.proposals.getProposalIngestionInfo, {
+            proposal_type: config.proposalType,
+            number: proposalNumber
+          });
+        }
       }
 
       const statusValue = extractString(metadata, ["status"]);
@@ -633,10 +659,12 @@ async function ingestRepo(
         proposal: proposalPayload
       });
 
-      metaMap.set(buildMetaKey(config.proposalType, proposalNumber), {
-        id: proposalId as string,
-        sha: file.sha
-      });
+      if (metaMap) {
+        metaMap.set(buildMetaKey(config.proposalType, proposalNumber), {
+          id: proposalId as string,
+          sha: file.sha
+        });
+      }
 
       const wasExisting = Boolean(existingInfo?.id);
       if (wasExisting) {
@@ -673,8 +701,10 @@ async function main() {
 
     const token = process.env.GITHUB_TOKEN;
     const client = new ConvexHttpClient(convexUrl);
-    const metaMap = await loadProposalMetaMap(client);
-    console.log(`Loaded ${metaMap.size} proposal metadata entries from Convex.`);
+    const metaMap = await tryLoadProposalMetaMap(client);
+    if (metaMap) {
+      console.log(`Loaded ${metaMap.size} proposal metadata entries from Convex.`);
+    }
 
     const report: IngestionReport = {
       startedAt: new Date().toISOString(),
