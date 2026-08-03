@@ -61,7 +61,7 @@ GitHub Repos → scripts/ingest_proposals.ts → Convex → Next.js UI
 
 ### Prerequisites
 
-- Node.js 18+ and npm
+- Node.js 24 and npm
 - Convex account or local Convex dev deployment
 
 ### Installation
