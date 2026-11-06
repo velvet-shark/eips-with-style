@@ -1,4 +1,4 @@
-import { mutation, query } from "./_generated/server";
+import { internalMutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { toProposalShort } from "./proposal_utils";
 import type { Id } from "./_generated/dataModel";
@@ -6,7 +6,8 @@ import type { Id } from "./_generated/dataModel";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const DEFAULT_DAYS = 30;
 const DEFAULT_LIMIT = 20;
-const MAX_DAYS = 365;
+// Raw views older than VIEW_RETENTION_DAYS are pruned (see views.ts), so the window cannot exceed it.
+const MAX_DAYS = 30;
 const MAX_LIMIT = 50;
 
 async function computePopularFromViews(ctx: any, daysBack: number, limit: number) {
@@ -39,7 +40,7 @@ async function computePopularFromViews(ctx: any, daysBack: number, limit: number
   return proposals.filter(Boolean);
 }
 
-export const computePopularProposals = mutation({
+export const computePopularProposals = internalMutation({
   args: {
     daysBack: v.optional(v.number()),
     limit: v.optional(v.number())
@@ -67,6 +68,16 @@ export const computePopularProposals = mutation({
     const now = Date.now();
     const existing = await ctx.db.query("popular_cache").first();
     if (existing) {
+      // Skip the write when the ranking is unchanged, so cached getPopularProposals results stay valid.
+      const unchanged =
+        existing.proposals.length === proposals.length &&
+        existing.proposals.every(
+          (entry, index) =>
+            entry.proposalId === proposals[index].proposalId && entry.view_count === proposals[index].view_count
+        );
+      if (unchanged) {
+        return existing._id;
+      }
       await ctx.db.patch(existing._id, {
         lastComputedAt: now,
         proposals

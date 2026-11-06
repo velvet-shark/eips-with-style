@@ -11,11 +11,8 @@ export async function trackProposalView(proposalId: string) {
       console.error("NEXT_PUBLIC_CONVEX_URL is missing; cannot track proposal views.");
       return;
     }
-    const userAgent = navigator.userAgent;
-
     await convex.mutation(api.views.trackView, {
-      proposalId: proposalId as Id<"proposals">,
-      userAgent
+      proposalId: proposalId as Id<"proposals">
     });
   } catch (error) {
     console.error("Error tracking view:", error);

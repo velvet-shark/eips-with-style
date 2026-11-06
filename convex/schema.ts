@@ -45,10 +45,17 @@ export default defineSchema({
   proposal_views: defineTable({
     proposalId: v.id("proposals"),
     viewed_at: v.number(),
+    // Legacy: no longer written. Remove once pruning has cleared rows older than the retention window.
     user_agent: v.optional(v.string())
   })
     .index("by_viewed_at", ["viewed_at"])
     .index("by_proposal", ["proposalId"]),
+  // Per-day view counts kept after raw proposal_views rows are pruned.
+  proposal_view_daily: defineTable({
+    proposalId: v.id("proposals"),
+    day: v.string(), // UTC date, YYYY-MM-DD
+    count: v.number()
+  }).index("by_day_proposal", ["day", "proposalId"]),
   popular_cache: defineTable({
     lastComputedAt: v.number(),
     proposals: v.array(

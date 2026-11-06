@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: "0 0 * * *" # Run daily at midnight UTC
   workflow_dispatch: # Allow manual trigger
+    inputs:
+      full_refresh:
+        description: "Rewrite every proposal, even when its sha is unchanged (use after changing ingestion parsing)"
+        type: boolean
+        default: false
 
 jobs:
   update:
@@ -28,4 +33,11 @@ jobs:
         env:
           CONVEX_URL: ${{ secrets.CONVEX_URL }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx tsx scripts/ingest_proposals.ts --download
+          FULL_REFRESH: ${{ inputs.full_refresh }}
+        # Unchanged proposals (same sha as in Convex) are skipped, so a normal run only writes what changed.
+        run: |
+          if [ "$FULL_REFRESH" = "true" ]; then
+            npx tsx scripts/ingest_proposals.ts --download
+          else
+            npx tsx scripts/ingest_proposals.ts
+          fi
