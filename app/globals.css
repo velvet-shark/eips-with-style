@@ -73,3 +73,14 @@ body,
     @apply bg-background text-foreground;
   }
 }
+
+/* Code blocks in proposals (token colors live in prism-themes.css). */
+.code-block pre {
+  margin: 0.5em 0;
+  padding: 1em;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: "Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+  line-height: 1.5;
+}

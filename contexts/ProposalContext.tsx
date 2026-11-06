@@ -1,8 +1,6 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { useConvex } from "convex/react";
-import { api } from "@/convex/_generated/api";
 import { ProposalShort } from "@/lib/types";
 import { getPopularProposals } from "@/lib/view-tracker";
 
@@ -41,11 +39,14 @@ export const ProposalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [featuredProposals, setFeaturedProposals] = useState<ProposalShort[]>([]);
   const [allProposals, setAllProposals] = useState<ProposalShort[]>([]);
   const [popularProposals, setPopularProposals] = useState<ProposalShort[]>([]);
-  const convex = useConvex();
-
   useEffect(() => {
-    const fetchFromConvex = async (): Promise<ProposalShort[]> => {
-      return convex.query(api.proposals.listAllProposals);
+    const fetchProposalList = async (): Promise<ProposalShort[]> => {
+      const response = await fetch("/api/proposals");
+      if (!response.ok) {
+        throw new Error(`Failed to load proposals: ${response.status}`);
+      }
+      const payload = (await response.json()) as { data?: ProposalShort[] };
+      return payload.data ?? [];
     };
 
     const loadProposals = async () => {
@@ -74,7 +75,7 @@ export const ProposalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
         // Fetch fresh if no cache or cache is stale
         if (!useCached) {
-          const freshData = await fetchFromConvex();
+          const freshData = await fetchProposalList();
           setAllProposals(freshData);
           setFeaturedProposals(freshData.filter((p) => p.featured));
           const payload: AllProposalsCache = { timestamp: now, data: freshData };
@@ -87,7 +88,7 @@ export const ProposalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     };
 
     loadProposals();
-  }, [convex]);
+  }, []);
 
   useEffect(() => {
     const loadPopularProposals = async () => {

@@ -1,9 +1,10 @@
-import { mutation } from "./_generated/server";
+import { internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 
 const MAX_BATCH = 1000;
 
-export const stripLegacyProposalContent = mutation({
+// One-off migration. Internal so it can only be run from the dashboard or `npx convex run`.
+export const stripLegacyProposalContent = internalMutation({
   args: {
     cursor: v.optional(v.union(v.string(), v.null())),
     limit: v.optional(v.number())

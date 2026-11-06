@@ -36,7 +36,9 @@ EIP.directory is an open-source web application that aggregates Ethereum-related
 GitHub Repos → scripts/ingest_proposals.ts → Convex → Next.js UI
 ```
 
-- Ingestion pulls markdown via GitHub’s Contents API, parses YAML front matter, normalizes links/authors, and upserts into Convex.
+- Ingestion lists files via GitHub’s Git Trees API (no 1,000-file cap), skips files whose sha is unchanged, parses YAML front matter, normalizes links/authors, and upserts into Convex.
+- Writes are protected: ingestion and the enrichment script send `INGEST_SECRET`; the admin UI writes as the signed-in admin.
+- Proposal pages are cached (ISR, revalidated every 6 hours); the proposal list for search is served from the cached `/api/proposals` route.
 - Enrichments are applied separately (script or admin UI) and never overwritten by ingestion.
 - View events are recorded for analytics and popular proposals are computed on a schedule from those logs.
 
@@ -87,7 +89,11 @@ GitHub Repos → scripts/ingest_proposals.ts → Convex → Next.js UI
    NEXT_PUBLIC_CONVEX_URL=your_convex_deployment_url
    # Optional for server-side fetches (Convex also writes this when running `npx convex dev`)
    CONVEX_URL=your_convex_deployment_url
+   # Required by the ingestion and enrichment scripts; must match the deployment's INGEST_SECRET
+   INGEST_SECRET=same_value_as_on_the_convex_deployment
    ```
+
+   Set the same secret on the Convex deployment with `npx convex env set INGEST_SECRET <value>` (add `--prod` for production).
 
 4. **Run Convex locally (required for data + admin UI)**
 
@@ -112,17 +118,23 @@ To fetch and update proposals from GitHub:
 npx tsx scripts/ingest_proposals.ts
 ```
 
-Automated daily updates run via GitHub Actions (`.github/workflows/update-proposals.yml`). Configure repository secrets:
+Automated daily updates run via GitHub Actions (`.github/workflows/update-proposals.yml`). Unchanged proposals are skipped; run the workflow manually with `full_refresh` after changing how proposals are parsed. Configure repository secrets:
 - `CONVEX_URL` (production Convex deployment URL)
-- `GITHUB_TOKEN` (optional, for higher GitHub API rate limits)
+- `INGEST_SECRET` (same value as the production Convex deployment's `INGEST_SECRET`)
+- `GITHUB_TOKEN` (provided by Actions, for higher GitHub API rate limits)
 
 ### Applying Enrichments
 
 To update "In simple terms" and "Why is it important?" copy from `backend/enrichments.json`:
 
 ```bash
+npx tsx scripts/enrich_proposals.ts backend/enrichments.json --dry-run
 npx tsx scripts/enrich_proposals.ts backend/enrichments.json
 ```
+
+### Deploying Convex functions
+
+Vercel production builds run `npx convex deploy` before `next build` when a `CONVEX_DEPLOY_KEY` environment variable is set for the Production environment (see `scripts/build.mjs`). Preview builds and local builds only run `next build`.
 
 ## 📁 Project Structure
 
@@ -136,12 +148,10 @@ npx tsx scripts/enrich_proposals.ts backend/enrichments.json
 ├── convex/                 # Convex schema, queries, mutations, auth, cron jobs
 ├── config/                 # Configuration files
 ├── contexts/              # React contexts
-├── database/              # Database schema
 ├── hooks/                 # Custom React hooks
 ├── lib/                   # Utility libraries
 ├── public/                # Static assets
-├── scripts/               # Ingestion + enrichment tooling
-└── utils/                 # Helper functions
+└── scripts/               # Ingestion + enrichment tooling
 ```
 
 ## 🗺️ Sitemap

@@ -1,6 +1,6 @@
 import { Metadata, ResolvingMetadata } from "next";
 import { notFound, redirect } from "next/navigation";
-import ClientNavigation from "@/components/client-navigation";
+import { Navigation } from "@/components/navigation";
 import Proposal from "@/components/proposal";
 import MetadataItem from "@/components/metadata-item";
 import Authors from "@/components/authors";
@@ -9,11 +9,10 @@ import LinkItem from "@/components/link-item";
 import MetadataGeneralInfo from "@/components/metadata-general-info";
 import { replaceImageUrls } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
-import { Suspense, cache } from "react";
-import Loading from "@/app/loading";
+import { cache } from "react";
 import ViewTracker from "@/components/view-tracker";
-import { fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
+import { getConvexClient } from "@/lib/convex-server";
 
 import {
   ChevronsLeftRightIcon as MetadataIcon,
@@ -32,8 +31,17 @@ const normalizeProposalType = (value: string) => {
   return trimmed.toLowerCase().endsWith("s") ? trimmed.slice(0, -1).toUpperCase() : trimmed.toUpperCase();
 };
 
+// Pages are rendered on first visit, served from the CDN, and re-rendered in the background at most every
+// 6 hours (ingestion runs daily). Admin enrichment edits revalidate the affected page immediately.
+export const revalidate = 21600;
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  return [];
+}
+
 const getProposalBySlugType = cache(async (proposalType: string, slug: string) => {
-  return fetchQuery(api.proposals.getProposalBySlugType, {
+  return getConvexClient().query(api.proposals.getProposalBySlugType, {
     slug,
     proposal_type: normalizeProposalType(proposalType)
   });
@@ -85,53 +93,33 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
 }
 
 export default async function ProposalPage({ params }: Props) {
-  const resolvedParams = await params;
-  return (
-    <Suspense fallback={<Loading />}>
-      <ProposalContent params={resolvedParams} />
-    </Suspense>
-  );
-}
+  const { proposalType, slug } = await params;
 
-async function ProposalContent({ params }: { params: { proposalType: string; slug: string } }) {
-  const { proposalType, slug } = params;
-
-  async function checkProposal(type: string, proposalSlug: string) {
-    return getProposalBySlugType(type, proposalSlug);
-  }
-
-  let proposal = await checkProposal(proposalType, slug);
-
-  // If it's an EIP and not found, check if it exists as an ERC
-  if (!proposal && proposalType === "eips") {
-    const ercSlug = slug.replace("eip-", "erc-");
-    const ercProposal = await checkProposal("ercs", ercSlug);
-    if (ercProposal) {
-      redirect(`/ercs/${ercSlug}`);
-    }
-  }
-
-  // Check if the slug ends with ".md" and remove it
+  // Resolve redirects and 404s before rendering anything, so they get real HTTP status codes.
   if (slug.endsWith(".md")) {
-    const updatedSlug = slug.slice(0, -3); // Remove the last 3 characters ('.md')
-    redirect(`/${proposalType}/${updatedSlug}`);
+    redirect(`/${proposalType}/${slug.slice(0, -3)}`);
   }
 
-  // If still not found, redirect to 404
+  const proposal = await getProposalBySlugType(proposalType, slug);
+
   if (!proposal) {
+    // An EIP that moved to the ERC repository
+    if (proposalType === "eips") {
+      const ercSlug = slug.replace("eip-", "erc-");
+      if (await getProposalBySlugType("ercs", ercSlug)) {
+        redirect(`/ercs/${ercSlug}`);
+      }
+    }
     notFound();
   }
 
-  if (proposal) {
-    proposal.content = replaceImageUrls(proposal.content, proposal.proposal_type);
-  }
-
-  const requiresList = proposal?.requires ?? [];
+  proposal.content = replaceImageUrls(proposal.content, proposal.proposal_type);
+  const requiresList = proposal.requires ?? [];
 
   return (
     <div className="flex h-full dark:bg-[#1f1f1f]">
       <ViewTracker proposalId={proposal.id} />
-      <ClientNavigation />
+      <Navigation />
       <main className="flex-1 h-full overflow-y-auto">
         <div className="flex-1 px-6 pb-10 items-center justify-center md:justify-start gap-y-8">
           <div className="pb-20">

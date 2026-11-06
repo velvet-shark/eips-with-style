@@ -1,16 +1,13 @@
 "use client";
 
 import { Navigation } from "@/components/navigation";
-import { useProposals } from "@/contexts/ProposalContext";
 import { Logo } from "@/components/logo";
 import { SearchLink } from "@/components/search-link";
 
 export default function ClientIndex() {
-  const { allProposals } = useProposals();
-
   return (
     <div className="h-full flex dark:bg-[#1F1F1F]">
-      <Navigation proposals={allProposals} />
+      <Navigation />
       <main className="flex-1 h-full overflow-y-auto">
         <div className="flex-1 px-6 pb-10 items-center justify-center md:justify-start text-center gap-y-8">
           <div className="max-w-4xl mx-auto mt-16">
@@ -52,7 +49,7 @@ export default function ClientIndex() {
               </p>
 
               <p>
-                For some proposals that are important, noteworthy, or interesting there's a{" "}
+                For some proposals that are important, noteworthy, or interesting there&apos;s a{" "}
                 <span className="font-semibold text-green-600 dark:text-green-400">Why is it important?</span> section
                 which explains, in simple terms, why the proposal matters.
               </p>

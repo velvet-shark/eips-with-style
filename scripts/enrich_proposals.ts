@@ -63,7 +63,8 @@ Defaults:
   json_file       ${DEFAULT_ENRICHMENTS_PATH}
 
 Environment variables:
-  CONVEX_URL   Required Convex deployment URL.
+  CONVEX_URL     Required Convex deployment URL.
+  INGEST_SECRET  Required (except with --dry-run). Must match INGEST_SECRET on the Convex deployment.
 `;
 
 function parseArgs(argv: string[]): ParsedArgs {
@@ -214,6 +215,10 @@ async function main() {
     if (!convexUrl) {
       throw new Error("CONVEX_URL is required to run enrichments.");
     }
+    const secret = process.env.INGEST_SECRET;
+    if (!secret && !options.dryRun) {
+      throw new Error("INGEST_SECRET is required to apply enrichments.");
+    }
 
     const resolvedPath = path.resolve(options.filePath);
     if (!existsSync(resolvedPath)) {
@@ -293,9 +298,11 @@ async function main() {
           number: number;
           title_descriptive?: string;
           why_important?: string;
+          secret?: string;
         } = {
           proposalType: proposal_type,
-          number
+          number,
+          secret
         };
 
         if (title_descriptive !== undefined) {

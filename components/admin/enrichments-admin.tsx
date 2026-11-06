@@ -239,7 +239,7 @@ export default function EnrichmentsAdmin({
           <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <CardTitle>Enrichment Admin</CardTitle>
-              <CardDescription>Update "In simple terms" and "Why is it important?" for proposals.</CardDescription>
+              <CardDescription>Update &ldquo;In simple terms&rdquo; and &ldquo;Why is it important?&rdquo; for proposals.</CardDescription>
             </div>
             <div className="flex items-center gap-3 text-sm text-muted-foreground">
               <span>{userEmail}</span>

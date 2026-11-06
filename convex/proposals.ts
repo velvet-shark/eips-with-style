@@ -2,6 +2,7 @@ import { mutation, query } from "./_generated/server";
 import { v, type Infer } from "convex/values";
 import { toProposalDetail, toProposalShort } from "./proposal_utils";
 import type { Id } from "./_generated/dataModel";
+import { requireIngestSecret } from "./access";
 
 const proposalInput = v.object({
   proposal_type: v.string(),
@@ -161,9 +162,12 @@ export const getProposalIngestionInfo = query({
 
 export const upsertProposal = mutation({
   args: {
-    proposal: proposalInput
+    proposal: proposalInput,
+    // Shared secret from the INGEST_SECRET environment variable; only the ingestion script may write.
+    secret: v.string()
   },
   handler: async (ctx, args) => {
+    requireIngestSecret(args.secret);
     const { proposal } = args;
     const existingMeta = await ctx.db
       .query("proposal_meta")

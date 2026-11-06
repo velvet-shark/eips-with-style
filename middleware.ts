@@ -3,15 +3,7 @@ import { convexAuthNextjsMiddleware } from "@convex-dev/auth/nextjs/server";
 export default convexAuthNextjsMiddleware();
 
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - images - .svg, .png, .jpg, .jpeg, .gif, .webp
-     * Feel free to modify this pattern to include more paths.
-     */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
-  ],
+  // Only the admin area uses auth. /api/auth is the Convex Auth proxy route; the OAuth flow
+  // returns to /admin/enrichments (see components/admin/enrichments-admin.tsx).
+  matcher: ["/admin/:path*", "/api/admin/:path*", "/api/auth/:path*"]
 };

@@ -1,11 +1,10 @@
 import "./globals.css";
+import "./prism-themes.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-import ConvexAuthProvider from "@/components/providers/convex-auth-provider";
 import { SearchCommand } from "@/components/search-command";
 import { siteConfig } from "@/config/site";
 import { ProposalProvider } from "@/contexts/ProposalContext";
 import PlausibleProvider from "next-plausible";
-import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 
 export const metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -25,7 +24,7 @@ export const metadata = {
   }
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -37,22 +36,19 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         />
       </head>
       <body>
-        <ConvexAuthNextjsServerProvider>
-          <ConvexAuthProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-              storageKey="website-theme"
-            >
-              <ProposalProvider>
-                <SearchCommand />
-                {children}
-              </ProposalProvider>
-            </ThemeProvider>
-          </ConvexAuthProvider>
-        </ConvexAuthNextjsServerProvider>
+        {/* Convex auth providers live in app/admin/layout.tsx so public pages stay static and cacheable. */}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+          storageKey="website-theme"
+        >
+          <ProposalProvider>
+            <SearchCommand />
+            {children}
+          </ProposalProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

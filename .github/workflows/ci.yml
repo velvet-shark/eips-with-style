@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      # Public deployment URL (it ships in the client bundle). Needed to prerender /api/proposals and the sitemap.
+      NEXT_PUBLIC_CONVEX_URL: ${{ secrets.CONVEX_URL }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "npm"
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+
+      # Secrets are not available to pull requests from forks; Vercel's preview build covers those.
+      - name: Build
+        if: env.NEXT_PUBLIC_CONVEX_URL != ''
+        run: npm run build

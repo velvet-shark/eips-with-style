@@ -32,6 +32,7 @@ jobs:
       - name: Run proposal ingestion
         env:
           CONVEX_URL: ${{ secrets.CONVEX_URL }}
+          INGEST_SECRET: ${{ secrets.INGEST_SECRET }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FULL_REFRESH: ${{ inputs.full_refresh }}
         # Unchanged proposals (same sha as in Convex) are skipped, so a normal run only writes what changed.

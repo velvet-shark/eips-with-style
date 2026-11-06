@@ -1,14 +1,21 @@
 import { mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { hasValidIngestSecret, isAdminUser } from "./access";
 
 export const updateEnrichment = mutation({
   args: {
     proposalType: v.string(),
     number: v.number(),
     title_descriptive: v.optional(v.string()),
-    why_important: v.optional(v.string())
+    why_important: v.optional(v.string()),
+    // Used by scripts/enrich_proposals.ts; the admin UI authenticates as the signed-in admin instead.
+    secret: v.optional(v.string())
   },
   handler: async (ctx, args) => {
+    if (!hasValidIngestSecret(args.secret) && !(await isAdminUser(ctx))) {
+      throw new Error("Unauthorized");
+    }
+
     const proposal = await ctx.db
       .query("proposals")
       .withIndex("by_type_number", (q) => q.eq("proposal_type", args.proposalType).eq("number", args.number))

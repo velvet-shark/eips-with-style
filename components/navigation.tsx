@@ -15,11 +15,7 @@ import { useProposals } from "@/contexts/ProposalContext";
 
 import { cn } from "@/lib/utils";
 
-export interface NavigationProps {
-  proposals: any[]; // Replace 'any' with a more specific type if possible
-}
-
-export const Navigation: React.FC<NavigationProps> = ({ proposals }) => {
+export const Navigation: React.FC = () => {
   const { featuredProposals, popularProposals } = useProposals();
 
   const pathname = usePathname();

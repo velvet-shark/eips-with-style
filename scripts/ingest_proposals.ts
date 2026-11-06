@@ -132,8 +132,9 @@ Options:
   --help             Show this help message.
 
 Environment variables:
-  CONVEX_URL   Required Convex deployment URL.
-  GITHUB_TOKEN Optional GitHub token for higher rate limits.
+  CONVEX_URL     Required Convex deployment URL.
+  INGEST_SECRET  Required. Must match INGEST_SECRET on the Convex deployment.
+  GITHUB_TOKEN   Optional GitHub token for higher rate limits.
 `;
 
 function parseArgs(argv: string[]): ParsedArgs {
@@ -441,13 +442,41 @@ async function fetchGitHubJson<T>(url: string, token?: string): Promise<T> {
   return (await response.json()) as T;
 }
 
+type GitTree = {
+  sha: string;
+  truncated: boolean;
+  tree: { path: string; type: string; sha: string }[];
+};
+
+// Uses the Git Trees API rather than the Contents API, which silently caps directory listings at 1,000 entries.
 async function fetchRepoFiles(config: RepoConfig, token?: string): Promise<GitHubFile[]> {
-  const url = `${GITHUB_API_BASE}/${config.repo}/contents/${config.contentsPath}`;
-  const data = await fetchGitHubJson<GitHubFile[]>(url, token);
-  if (!Array.isArray(data)) {
-    throw new Error(`Unexpected GitHub API response for ${config.repo}.`);
+  const repoApi = `${GITHUB_API_BASE}/${config.repo}`;
+  const { default_branch: branch } = await fetchGitHubJson<{ default_branch: string }>(repoApi, token);
+
+  const rootTree = await fetchGitHubJson<GitTree>(`${repoApi}/git/trees/${encodeURIComponent(branch)}`, token);
+  const dirEntry = rootTree.tree.find((entry) => entry.type === "tree" && entry.path === config.contentsPath);
+  if (!dirEntry) {
+    throw new Error(`Directory ${config.contentsPath} not found in ${config.repo}@${branch}.`);
   }
-  return data.filter((file) => file.type === "file" && file.name.endsWith(".md"));
+
+  const dirTree = await fetchGitHubJson<GitTree>(`${repoApi}/git/trees/${dirEntry.sha}`, token);
+  if (dirTree.truncated) {
+    throw new Error(`GitHub truncated the ${config.repo}/${config.contentsPath} listing.`);
+  }
+
+  return dirTree.tree
+    .filter((entry) => entry.type === "blob" && entry.path.endsWith(".md"))
+    .map((entry) => {
+      const filePath = `${config.contentsPath}/${entry.path}`;
+      return {
+        name: entry.path,
+        path: filePath,
+        sha: entry.sha,
+        html_url: `https://github.com/${config.repo}/blob/${branch}/${filePath}`,
+        download_url: `https://raw.githubusercontent.com/${config.repo}/${branch}/${filePath}`,
+        type: "file"
+      };
+    });
 }
 
 async function downloadFile(url: string, token?: string): Promise<string> {
@@ -508,6 +537,7 @@ async function ingestRepo(
   client: ConvexHttpClient,
   report: IngestionReport,
   metaMap: Map<string, ExistingProposalInfo> | null,
+  secret: string,
   token?: string
 ) {
   const repoCounts = report.byType[config.proposalType];
@@ -518,6 +548,7 @@ async function ingestRepo(
 
   const files = await fetchRepoFiles(config, token);
   console.log(`Found ${files.length} markdown files`);
+  const seenNumbers = new Set<number>();
 
   for (const file of files) {
     repoCounts.processed += 1;
@@ -531,6 +562,7 @@ async function ingestRepo(
 
     try {
       const filenameNumber = extractNumberFromFilename(file.name);
+      if (filenameNumber) seenNumbers.add(filenameNumber);
       let existingInfo: ExistingProposalInfo | null = null;
 
       if (filenameNumber) {
@@ -587,6 +619,7 @@ async function ingestRepo(
       if (!proposalNumber) {
         throw new Error("Missing proposal number in front matter and filename.");
       }
+      seenNumbers.add(proposalNumber);
 
       if (!existingInfo || (filenameNumber && proposalNumber !== filenameNumber)) {
         if (metaMap) {
@@ -656,7 +689,8 @@ async function ingestRepo(
       };
 
       const proposalId = await client.mutation(api.proposals.upsertProposal, {
-        proposal: proposalPayload
+        proposal: proposalPayload,
+        secret
       });
 
       if (metaMap) {
@@ -689,6 +723,17 @@ async function ingestRepo(
       console.warn(`FAILED ${file.name}: ${entry.reason}`);
     }
   }
+
+  // Report (but never delete) proposals stored in Convex whose file no longer exists upstream.
+  if (metaMap) {
+    const prefix = `${config.proposalType}-`;
+    const stale = Array.from(metaMap.keys())
+      .filter((key) => key.startsWith(prefix) && !seenNumbers.has(Number(key.slice(prefix.length))))
+      .sort();
+    if (stale.length > 0) {
+      console.warn(`STALE (in Convex but not in ${config.repo}): ${stale.join(", ")}`);
+    }
+  }
 }
 
 async function main() {
@@ -697,6 +742,10 @@ async function main() {
     const convexUrl = process.env.CONVEX_URL;
     if (!convexUrl) {
       throw new Error("CONVEX_URL is required to run ingestion.");
+    }
+    const secret = process.env.INGEST_SECRET;
+    if (!secret) {
+      throw new Error("INGEST_SECRET is required to run ingestion.");
     }
 
     const token = process.env.GITHUB_TOKEN;
@@ -727,7 +776,7 @@ async function main() {
     await ensureDir(options.reportDir);
 
     for (const repo of targetRepos) {
-      await ingestRepo(repo, options, client, report, metaMap, token);
+      await ingestRepo(repo, options, client, report, metaMap, secret, token);
     }
 
     report.finishedAt = new Date().toISOString();

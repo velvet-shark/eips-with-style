@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchMutation, fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
@@ -167,6 +168,10 @@ export async function POST(request: Request) {
     }
 
     await fetchMutation(api.enrichments.updateEnrichment, mutationPayload, { token: auth.token });
+
+    // Proposal pages are cached (ISR); refresh this one now instead of waiting for the next revalidation.
+    const typeSegment = proposalType.toLowerCase();
+    revalidatePath(`/${typeSegment}s/${typeSegment}-${number}`);
 
     return NextResponse.json({ ok: true });
   } catch (error) {

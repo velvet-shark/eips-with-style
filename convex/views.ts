@@ -1,7 +1,14 @@
 import { internalMutation, mutation } from "./_generated/server";
-import { internal } from "./_generated/api";
+import { components, internal } from "./_generated/api";
 import { v } from "convex/values";
+import { MINUTE, RateLimiter } from "@convex-dev/rate-limiter";
 import type { Id } from "./_generated/dataModel";
+
+// trackView is public, so cap how fast views can be recorded. Real traffic is far below these limits.
+const rateLimiter = new RateLimiter(components.rateLimiter, {
+  viewsPerProposal: { kind: "fixed window", rate: 10, period: MINUTE },
+  viewsGlobal: { kind: "token bucket", rate: 300, period: MINUTE, shards: 4 }
+});
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 // Popular proposals use a 30-day window; keep a few extra days of raw views as a buffer.
@@ -15,6 +22,11 @@ export const trackView = mutation({
     userAgent: v.optional(v.string())
   },
   handler: async (ctx, args) => {
+    const perProposal = await rateLimiter.limit(ctx, "viewsPerProposal", { key: args.proposalId });
+    if (!perProposal.ok) return null;
+    const global = await rateLimiter.limit(ctx, "viewsGlobal");
+    if (!global.ok) return null;
+
     return ctx.db.insert("proposal_views", {
       proposalId: args.proposalId,
       viewed_at: Date.now()
