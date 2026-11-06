@@ -1,8 +1,9 @@
-import { mutation, query } from "./_generated/server";
-import { components } from "./_generated/api";
+import { internalAction, mutation, query } from "./_generated/server";
+import { components, internal } from "./_generated/api";
 import { ConvexError, v } from "convex/values";
 import { HOUR, RateLimiter } from "@convex-dev/rate-limiter";
 import { isAdminUser } from "./access";
+import { ADMIN_EMAIL } from "./admin_email";
 
 // submit is public and the deployment cannot see client IPs, so cap the total rate.
 // Real feedback volume is a few entries a week.
@@ -56,13 +57,62 @@ export const submit = mutation({
       throw new ConvexError("Too much feedback is coming in right now. Please try again in a few minutes.");
     }
 
-    return ctx.db.insert("feedback", {
-      message,
-      email,
-      rating: args.rating,
-      page: safePage,
-      archived: false
+    const entry = { message, email, rating: args.rating, page: safePage };
+    const id = await ctx.db.insert("feedback", { ...entry, archived: false });
+    await ctx.scheduler.runAfter(0, internal.feedback.sendAlert, entry);
+    return id;
+  }
+});
+
+const SITE_ORIGIN = "https://eip.directory";
+// Resend's shared sender works without a verified domain, but only delivers to the
+// Resend account owner's address. Set FEEDBACK_ALERT_FROM after verifying a domain.
+const DEFAULT_ALERT_FROM = "EIP.directory <onboarding@resend.dev>";
+
+// Emails the admin about a new submission. Runs after the submit mutation commits,
+// so a failed email never loses the feedback itself; failures show in the Convex logs.
+export const sendAlert = internalAction({
+  args: {
+    message: v.optional(v.string()),
+    email: v.optional(v.string()),
+    rating: v.optional(v.union(v.literal("up"), v.literal("down"))),
+    page: v.optional(v.string())
+  },
+  handler: async (_ctx, args) => {
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      console.warn("RESEND_API_KEY is not set; skipping the feedback alert email.");
+      return;
+    }
+
+    const rating = args.rating === "up" ? "Helpful" : args.rating === "down" ? "Not helpful" : "No rating";
+    const page = args.page ?? "unknown page";
+    const text = [
+      `Page: ${args.page ? SITE_ORIGIN + args.page : "unknown"}`,
+      `Rating: ${rating}`,
+      `From: ${args.email ?? "anonymous"}`,
+      "",
+      args.message ?? "(no comment)",
+      "",
+      `Inbox: ${SITE_ORIGIN}/admin/feedback`
+    ].join("\n");
+
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        from: process.env.FEEDBACK_ALERT_FROM ?? DEFAULT_ALERT_FROM,
+        to: [ADMIN_EMAIL],
+        subject: `Feedback on ${page} (${rating.toLowerCase()})`,
+        text,
+        // Replying to the alert goes straight to the person who left the feedback.
+        ...(args.email ? { reply_to: args.email } : {})
+      })
     });
+
+    if (!response.ok) {
+      throw new Error(`Resend rejected the feedback alert: ${response.status} ${await response.text()}`);
+    }
   }
 });
 
