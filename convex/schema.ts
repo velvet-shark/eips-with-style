@@ -56,6 +56,14 @@ export default defineSchema({
     day: v.string(), // UTC date, YYYY-MM-DD
     count: v.number()
   }).index("by_day_proposal", ["day", "proposalId"]),
+  // Submissions from the feedback widget on proposal pages. Read in /admin/feedback.
+  feedback: defineTable({
+    message: v.optional(v.string()),
+    email: v.optional(v.string()),
+    rating: v.optional(v.union(v.literal("up"), v.literal("down"))),
+    page: v.optional(v.string()), // path the feedback was sent from, e.g. /eips/eip-1559
+    archived: v.boolean()
+  }).index("by_archived", ["archived"]),
   popular_cache: defineTable({
     lastComputedAt: v.number(),
     proposals: v.array(

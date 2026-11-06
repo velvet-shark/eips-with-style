@@ -242,6 +242,9 @@ export default function EnrichmentsAdmin({
               <CardDescription>Update &ldquo;In simple terms&rdquo; and &ldquo;Why is it important?&rdquo; for proposals.</CardDescription>
             </div>
             <div className="flex items-center gap-3 text-sm text-muted-foreground">
+              <Link href="/admin/feedback" className="text-primary underline-offset-4 hover:underline">
+                Feedback
+              </Link>
               <span>{userEmail}</span>
               <Button onClick={handleSignOut} variant="ghost" size="sm">
                 Sign out

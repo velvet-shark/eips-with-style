@@ -47,7 +47,6 @@
     "next-plausible": "^3.12.5",
     "next-themes": "^0.3.0",
     "postcss": "8.5.25",
-    "pushfeedback-react": "^0.1.43",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-markdown": "^9.0.1",

@@ -13,6 +13,7 @@ import type * as admin_email from "../admin_email.js";
 import type * as auth from "../auth.js";
 import type * as crons from "../crons.js";
 import type * as enrichments from "../enrichments.js";
+import type * as feedback from "../feedback.js";
 import type * as http from "../http.js";
 import type * as migrations from "../migrations.js";
 import type * as popular from "../popular.js";
@@ -33,6 +34,7 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   crons: typeof crons;
   enrichments: typeof enrichments;
+  feedback: typeof feedback;
   http: typeof http;
   migrations: typeof migrations;
   popular: typeof popular;
