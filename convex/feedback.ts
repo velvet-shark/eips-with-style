@@ -3,7 +3,6 @@ import { components, internal } from "./_generated/api";
 import { ConvexError, v } from "convex/values";
 import { HOUR, RateLimiter } from "@convex-dev/rate-limiter";
 import { isAdminUser } from "./access";
-import { ADMIN_EMAIL } from "./admin_email";
 
 // submit is public and the deployment cannot see client IPs, so cap the total rate.
 // Real feedback volume is a few entries a week.
@@ -65,12 +64,11 @@ export const submit = mutation({
 });
 
 const SITE_ORIGIN = "https://eip.directory";
-// Resend's shared sender works without a verified domain, but only delivers to the
-// Resend account owner's address. Set FEEDBACK_ALERT_FROM after verifying a domain.
-const DEFAULT_ALERT_FROM = "EIP.directory <onboarding@resend.dev>";
+// Telegram caps messages at 4096 characters; leave room for the header lines.
+const MAX_ALERT_MESSAGE_LENGTH = 3500;
 
-// Emails the admin about a new submission. Runs after the submit mutation commits,
-// so a failed email never loses the feedback itself; failures show in the Convex logs.
+// Sends a Telegram message about a new submission. Runs after the submit mutation commits,
+// so a failed alert never loses the feedback itself; failures show in the Convex logs.
 export const sendAlert = internalAction({
   args: {
     message: v.optional(v.string()),
@@ -79,39 +77,38 @@ export const sendAlert = internalAction({
     page: v.optional(v.string())
   },
   handler: async (_ctx, args) => {
-    const apiKey = process.env.RESEND_API_KEY;
-    if (!apiKey) {
-      console.warn("RESEND_API_KEY is not set; skipping the feedback alert email.");
+    const botToken = process.env.TELEGRAM_BOT_TOKEN;
+    const chatId = process.env.TELEGRAM_CHAT_ID;
+    if (!botToken || !chatId) {
+      console.warn("TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID is not set; skipping the feedback alert.");
       return;
     }
 
-    const rating = args.rating === "up" ? "Helpful" : args.rating === "down" ? "Not helpful" : "No rating";
-    const page = args.page ?? "unknown page";
+    const rating = args.rating === "up" ? "👍 Helpful" : args.rating === "down" ? "👎 Not helpful" : "No rating";
+    const message =
+      args.message && args.message.length > MAX_ALERT_MESSAGE_LENGTH
+        ? `${args.message.slice(0, MAX_ALERT_MESSAGE_LENGTH)}… (cut, full text in the inbox)`
+        : args.message;
     const text = [
+      "💬 Feedback on eip.directory",
       `Page: ${args.page ? SITE_ORIGIN + args.page : "unknown"}`,
       `Rating: ${rating}`,
       `From: ${args.email ?? "anonymous"}`,
       "",
-      args.message ?? "(no comment)",
+      message ?? "(no comment)",
       "",
       `Inbox: ${SITE_ORIGIN}/admin/feedback`
     ].join("\n");
 
-    const response = await fetch("https://api.resend.com/emails", {
+    const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        from: process.env.FEEDBACK_ALERT_FROM ?? DEFAULT_ALERT_FROM,
-        to: [ADMIN_EMAIL],
-        subject: `Feedback on ${page} (${rating.toLowerCase()})`,
-        text,
-        // Replying to the alert goes straight to the person who left the feedback.
-        ...(args.email ? { reply_to: args.email } : {})
-      })
+      headers: { "Content-Type": "application/json" },
+      // No parse_mode: the text is user input, and markup characters in it would make Telegram reject the message.
+      body: JSON.stringify({ chat_id: chatId, text, disable_web_page_preview: true })
     });
 
     if (!response.ok) {
-      throw new Error(`Resend rejected the feedback alert: ${response.status} ${await response.text()}`);
+      throw new Error(`Telegram rejected the feedback alert: ${response.status} ${await response.text()}`);
     }
   }
 });
